@@ -8,9 +8,11 @@ if (route == "/")
 {
     w.htmlPage("mainpage");
 }
-else if (route == "/something")
+else if (route == "/something.qo")
 {
-    w.htmlPage("smt");
+    username = "Katroku";
+    content = format(read("index.html"));
+    w.htmlPage(content);
 }
 else
 {

@@ -9,6 +9,9 @@ Server configuration requirements:
 * Deny access for all `.html` files
 * Serve everything else as static files
 
+Other requirements:
+* Latest version of QoLang, which means you have to build it yourself if the latest version isn't a stable version.
+
 After configuring these, you can get your Clog blog to run just like any PHP website.
 
 Example nginx config:
