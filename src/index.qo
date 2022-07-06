@@ -1,0 +1,18 @@
+#!/usr/local/bin/qo
+include qo;
+include webutil as w;
+
+route = deleteAfter(qo.env("REQUEST_URI"), '?');
+
+if (route == "/")
+{
+    w.htmlPage("mainpage");
+}
+else if (route == "/something")
+{
+    w.htmlPage("smt");
+}
+else
+{
+    w.notFound();
+};

@@ -1,0 +1,16 @@
+__export__ = [
+    "htmlPage",
+    "notFound"
+];
+
+func htmlPage(page)
+{
+    print(%"Content-Type: text/html\n\n");
+    print(page);
+};
+
+func notFound()
+{
+    print(%"Content-Type: text/html\nStatus: 404 Not Found\n\n");
+    print("not found");
+};
