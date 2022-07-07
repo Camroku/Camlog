@@ -1,0 +1,141 @@
+/*
+This stylesheet is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+This stylesheet is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this stylesheet. If not, see <https://www.gnu.org/licenses/>. 
+*/
+
+body {
+    background-color: #262626;
+    color: #BCBCBC;
+    font-family: monospace; /* delete/comment this line if you use another
+                            font. i wrote this because it's hard to read a
+                            text with default browser font, and monospace
+                            fonts are my favorites. */
+}
+
+blockquote {
+    border-left: 2px solid #444444;
+    padding-left: 10px;
+}
+
+table {
+    border: 1px solid #444444;
+    border-collapse: collapse;
+}
+
+th, td, table caption {
+    border: 1px solid #444444;
+    padding: 5px;
+}
+
+tr:nth-child(even) {
+    background-color: #1C1C1C;
+}
+
+th {
+    background-color: #303030;
+}
+
+a:link {
+    color: #5f87af;
+}
+
+a:visited {
+    color: #8787af;
+}
+
+a:active {
+    color: #af5f5f;
+}
+
+mark {
+    background-color: #FFFFAF;
+}
+
+iframe {
+    border: 1px solid #444444;
+}
+
+fieldset {
+    border: 1px solid #444444;
+}
+
+input, textarea, button {
+    background-color: #303030;
+    border: 1px solid #444444;
+    color: #BCBCBC;
+}
+
+button[disabled], input[disabled] {
+    background-color: #262626;
+    border: 1px solid #303030;
+    color: #585858;
+}
+
+input[type="file"]::file-selector-button, input[type="file"]::-webkit-file-upload-button {
+    background-color: #303030;
+    border: none;
+    border-right: 1px solid #444444;
+    color: #BCBCBC;
+}
+
+select {
+    background-color: #303030;
+    border: 1px solid #444444;
+    color: #BCBCBC;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+}
+
+input[type="range"]:focus {
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    height: 5px;
+    cursor: pointer;
+    background: #5F87AF;
+    border-radius: 3px;
+    border: 1px solid #303030;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    border: 1px solid #303030;
+    height: 15px;
+    width: 15px;
+    border-radius: 3px;
+    background: #BCBCBC;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -6px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #5F87AF;
+}
+
+input[type="range"]::-moz-range-track {
+    cursor: pointer;
+    background: #5F87AF;
+    border-radius: 3px;
+    border: 1px solid #303030;
+}
+
+input[type="range"]::-moz-range-thumb {
+    border: 1px solid #303030;
+    border-radius: 3px;
+    background: #BCBCBC;
+    cursor: pointer;
+}

@@ -1,20 +1,17 @@
 #!/usr/local/bin/qo
 include qo;
-include webutil as w;
+include webutil;
+
+config.author = "abc";
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
 
 if (route == "/")
 {
-    w.htmlPage("mainpage");
-}
-else if (route == "/something.qo")
-{
-    username = "Katroku";
     content = format(read("index.html"));
-    w.htmlPage(content);
+    webutil.htmlPage(content);
 }
 else
 {
-    w.notFound();
+    webutil.notFound();
 };
