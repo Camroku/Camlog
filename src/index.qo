@@ -25,7 +25,7 @@ if (route == "/")
     foreach &page in filelist("./pages")
     {
         pagename = readline("./pages/" + page);
-        pagelist += %"<li><a href=\"/p/" + replace(page, ".txt", "") + %".txt\">$pagename</a></li>";
+        pagelist += %"<li><a href=\"/p/" + replace(page, ".txt", "") + %".qo\">$pagename</a></li>";
     };
     content = format(read("views/index.html"));
     webutil.htmlPage(content);
