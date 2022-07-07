@@ -33,15 +33,19 @@ else
 {
     splitted = split(route, "/");
     splitted = deleteBlank(splitted);
-    if (splitted[0] == "d") {
+    if (splitted[0] == "p") {
         if (len(splitted) == 1) {
             webutil.redirect("/");
         } else {
-            page = replace(replace(splitted[1], ".qo", ""), "_", " ");
             pagecontent = read("pages/" + replace(splitted[1], ".qo", ".txt"));
             if (pagecontent == None) {
                 webutil.error("404 Not Found");
             } else {
+                splitted = split(pagecontent, %"\n-----\n");
+                pagecontent = join(splitted[1:], "\n-----\n");
+                metadata = split(splitted[0], %"\n");
+                page = metadata[0];
+                date = formatdate(toInt(metadata[1]), '%Y-%m-%d %H:%M:%S');
                 content = format(read("views/page.html"));
                 webutil.htmlPage(content);
             };
