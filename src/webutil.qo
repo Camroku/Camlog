@@ -15,7 +15,7 @@ func error(errorcode)
     include config;
     footer = format(read("views/footer.html"));
     print(%"Content-Type: text/html\nStatus: $errorcode\n\n");
-    print(format(read("error.html")));
+    print(format(read("views/error.html")));
 };
 
 func redirect(loc)
