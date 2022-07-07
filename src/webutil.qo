@@ -1,6 +1,7 @@
 __export__ = [
     "htmlPage",
-    "notFound"
+    "error",
+    "redirect"
 ];
 
 func htmlPage(page)
@@ -9,8 +10,15 @@ func htmlPage(page)
     print(page);
 };
 
-func notFound()
+func error(errorcode)
 {
-    print(%"Content-Type: text/html\nStatus: 404 Not Found\n\n");
-    print("not found");
+    include config;
+    footer = format(read("footer.html"));
+    print(%"Content-Type: text/html\nStatus: $errorcode\n\n");
+    print(format(read("error.html")));
+};
+
+func redirect(loc)
+{
+    print(%"Location: $loc\n\n");
 };

@@ -1,15 +1,6 @@
 /*
-This stylesheet is free software: you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or (at your
-option) any later version.
-
-This stylesheet is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with
-this stylesheet. If not, see <https://www.gnu.org/licenses/>. 
+This stylesheet is a modified version of apprentice.css, which is licensed under GPLv3.
+https://github.com/Camroku/apprentice.css
 */
 
 body {
@@ -19,6 +10,7 @@ body {
                             font. i wrote this because it's hard to read a
                             text with default browser font, and monospace
                             fonts are my favorites. */
+    margin: 0;
 }
 
 blockquote {
@@ -138,4 +130,17 @@ input[type="range"]::-moz-range-thumb {
     border-radius: 3px;
     background: #BCBCBC;
     cursor: pointer;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    text-align: center;
+    background-color: #303030;
+}
+
+div.content {
+    margin: 10px;
 }
