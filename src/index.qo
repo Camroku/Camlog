@@ -5,7 +5,7 @@ include config;
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
 
-footer = format(read("footer.html"));
+footer = format(read("views/footer.html"));
 
 func deleteBlank(list)
 {
@@ -21,12 +21,12 @@ func deleteBlank(list)
 
 if (route == "/")
 {
-    content = format(read("index.html"));
+    content = format(read("views/index.html"));
     webutil.htmlPage(content);
 }
 else if (route == "/")
 {
-    content = format(read("index.html"));
+    content = format(read("views/index.html"));
     webutil.htmlPage(content);
 }
 else
@@ -42,7 +42,7 @@ else
             if (pagecontent == None) {
                 webutil.error("404 Not Found");
             } else {
-                content = format(read("page.html"));
+                content = format(read("views/page.html"));
                 webutil.htmlPage(content);
             };
         };
