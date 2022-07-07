@@ -21,11 +21,12 @@ func deleteBlank(list)
 
 if (route == "/")
 {
-    content = format(read("views/index.html"));
-    webutil.htmlPage(content);
-}
-else if (route == "/")
-{
+    pagelist = "";
+    foreach &page in filelist("./pages")
+    {
+        pagename = readline("./pages/" + page);
+        pagelist += %"<li><a href=\"/p/" + replace(page, ".txt", "") + %".txt\">$pagename</a></li>";
+    };
     content = format(read("views/index.html"));
     webutil.htmlPage(content);
 }
