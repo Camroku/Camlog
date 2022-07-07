@@ -1,0 +1,5 @@
+author = "abc";
+
+__export__ = [
+    "author"
+];

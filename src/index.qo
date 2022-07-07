@@ -1,8 +1,7 @@
 #!/usr/local/bin/qo
 include qo;
 include webutil;
-
-config.author = "abc";
+include config;
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
 
