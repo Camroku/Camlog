@@ -36,6 +36,10 @@ th {
     background-color: #303030;
 }
 
+a {
+    text-decoration: none;
+}
+
 a:link {
     color: #5f87af;
 }
@@ -132,13 +136,12 @@ input[type="range"]::-moz-range-thumb {
     cursor: pointer;
 }
 
-footer {
+.footer {
     position: absolute;
     bottom: 0;
     width: 100%;
     height: auto;
     text-align: center;
-    background-color: #303030;
 }
 
 div.content {
