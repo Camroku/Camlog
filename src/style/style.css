@@ -6,11 +6,8 @@ https://github.com/Camroku/apprentice.css
 body {
     background-color: #262626;
     color: #BCBCBC;
-    font-family: monospace; /* delete/comment this line if you use another
-                            font. i wrote this because it's hard to read a
-                            text with default browser font, and monospace
-                            fonts are my favorites. */
     margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 blockquote {
