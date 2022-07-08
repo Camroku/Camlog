@@ -1,9 +1,13 @@
 #!/usr/local/bin/qo
-include qo;
-include webutil;
-include config;
+include wutils;
 include qomar;
 include sort;
+include qcf;
+include qo;
+
+qcf.new("config.qcf", &config);
+
+config.author = config.get("author");
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
 
@@ -62,7 +66,7 @@ if (route == "/")
         i += 1;
     };
     content = format(read("views/index.html"));
-    webutil.htmlPage(content);
+    wutils.htmlPage(content);
 }
 else
 {
@@ -70,11 +74,11 @@ else
     splitted = deleteBlank(splitted);
     if (splitted[0] == "p") {
         if (len(splitted) == 1) {
-            webutil.redirect("/");
+            wutils.redirect("/");
         } else {
             pagecontent = read("pages/" + splitted[1] + ".qm");
             if (pagecontent == None) {
-                webutil.error("404 Not Found");
+                wutils.error("404 Not Found");
             } else {
                 splitted = split(pagecontent, %"\n-----\n");
                 pagecontent = qomar.compile.html(join(splitted[1:], %"\n-----\n"));
@@ -93,10 +97,10 @@ else
                     };
                 };
                 content = format(read("views/page.html"));
-                webutil.htmlPage(content);
+                wutils.htmlPage(content);
             };
         };
     } else {
-        webutil.error("404 Not Found");
+        wutils.error("404 Not Found");
     };
 };
