@@ -1,7 +1,7 @@
 # qomar: A markup language written in Python for QoLang
 # This file can be imported and used as `function(None, [args])` in Python
 qolang_export = {
-    "compiletohtml": "compile.html"
+    "compiletohtml": "compile.html",
 }
 
 # Some functions were taken from QoLang's lexer.
