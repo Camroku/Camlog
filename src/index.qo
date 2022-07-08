@@ -44,7 +44,7 @@ else
                 webutil.error("404 Not Found");
             } else {
                 splitted = split(pagecontent, %"\n-----\n");
-                pagecontent = join(splitted[1:], "\n-----\n");
+                pagecontent = join(splitted[1:], %"\n-----\n");
                 metadata = split(splitted[0], %"\n");
                 foreach &data in metadata
                 {
