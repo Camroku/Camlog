@@ -49,12 +49,17 @@ if (route == "/")
     };
     ret = sort.sortbyvalr(pagelist, datelist);
     pages = ret[0];
+    datelist = ret[1];
     remove(ret);
-    remove(datelist);
     pagelist = "";
+    i = 0;
     foreach &page in pages
     {
-        pagelist += %"<li><a href=\"/p/" + replace(page[0], ".qm", "") + %"\">" + page[1] + "</a></li>";
+        pagelink = replace(page[0], ".qm", "");
+        pagename = page[1];
+        pagedate = formatdate(datelist[i], '%Y-%m-%d %H:%M:%S');
+        pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
+        i += 1;
     };
     content = format(read("views/index.html"));
     webutil.htmlPage(content);
