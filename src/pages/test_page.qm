@@ -7,3 +7,7 @@ This is the very first blog page in Clog.
 This is another paragraph.
 
 This is `code`.
+
+```
+This is block code.
+```
