@@ -1,5 +1,1 @@
 author = "Arnolxu";
-
-__export__ = [
-    "author"
-];
