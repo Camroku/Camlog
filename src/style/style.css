@@ -143,4 +143,6 @@ input[type="range"]::-moz-range-thumb {
 
 div.content {
     margin: 10px;
+    margin-left: 15%;
+    margin-right: 15%;
 }
