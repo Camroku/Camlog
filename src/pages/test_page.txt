@@ -1,5 +1,5 @@
-Test page
-1657226570
+title Test page
+date 1657226570
 -----
 Hello!
 This is the very first blog page in Clog.

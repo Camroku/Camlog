@@ -4,16 +4,16 @@ Camroku's Blog.
 ## Creating a page
 Syntax is as follows:
 ```
-Page title
-Unix timestamp of when it was written
+title Page title
+date Unix timestamp of when it was written
 -----
 Content
 ```
 
 Example:
 ```
-Test page
-1657226570
+title Test page
+date 1657226570
 -----
 Hello!
 This is the very first blog page in Clog.
