@@ -19,7 +19,7 @@ Hello!
 This is the very first blog page in Clog.
 ```
 
-You can use HTML in pages. A markdown-like language is currently being developed.
+You can use HTML in pages. [A markdown-like language](src/qomar.py) is currently being developed.
 ## Running
 Server configuration requirements:
 * Serve `/index.qo` as a CGI script

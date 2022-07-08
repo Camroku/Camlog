@@ -2,6 +2,7 @@
 include qo;
 include webutil;
 include config;
+include qomar;
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
 
@@ -55,7 +56,7 @@ else
                 webutil.error("404 Not Found");
             } else {
                 splitted = split(pagecontent, %"\n-----\n");
-                pagecontent = join(splitted[1:], %"\n-----\n");
+                pagecontent = qomar.compile.html(join(splitted[1:], %"\n-----\n"));
                 metadata = split(splitted[0], %"\n");
                 foreach &data in metadata
                 {
