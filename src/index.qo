@@ -3,6 +3,7 @@ include qo;
 include webutil;
 include config;
 include qomar;
+include sort;
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
 
@@ -23,7 +24,8 @@ func deleteBlank(list)
 
 if (route == "/")
 {
-    pagelist = "";
+    pagelist = [];
+    datelist = [];
     foreach &page in filelist("./pages")
     {
         pagecontent = read("pages/" + page);
@@ -36,9 +38,23 @@ if (route == "/")
             if (datasplitted[0] == "title")
             {
                 pagename = join(datasplitted[1:], " ");
+            }
+            else if (datasplitted[0] == "date")
+            {
+                date = toInt(datasplitted[1]);
             };
         };
-        pagelist += %"<li><a href=\"/p/" + replace(page, ".qm", "") + %"\">$pagename</a></li>";
+        pagelist += [[page, pagename]];
+        datelist += [date];
+    };
+    ret = sort.sortbyvalr(pagelist, datelist);
+    pages = ret[0];
+    remove(ret);
+    remove(datelist);
+    pagelist = "";
+    foreach &page in pages
+    {
+        pagelist += %"<li><a href=\"/p/" + replace(page[0], ".qm", "") + %"\">" + page[1] + "</a></li>";
     };
     content = format(read("views/index.html"));
     webutil.htmlPage(content);
