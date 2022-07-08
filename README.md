@@ -23,10 +23,10 @@ You can use HTML in pages. [A markdown-like language](src/qomar.py) is currently
 ## Running
 Server configuration requirements:
 * Serve `/index.qo` as a CGI script
-* Rewrite all URLs ending with `.qo` to `/index.qo`
+* Rewrite all URLs to `/index.qo`
 * Serve `index.qo` as index file
 * Deny access for all `.html` files
-* Serve everything else as static files
+* Serve all `.js` and `.css` files as static files
 
 Other requirements:
 * Latest version of QoLang, which means you have to build it yourself if the latest version isn't a stable version.
@@ -48,10 +48,14 @@ server {
         server_name localhost;
 
         location / {
-                try_files $uri $uri/ =404;
+                rewrite (.*) /index.qo last;
         }
 
-        location ~ \.qo$ {
+        location ~ \.js$|\.css$ {
+                try_files $uri @notfound;
+        }
+
+        location @notfound {
                 rewrite (.*) /index.qo last;
         }
 

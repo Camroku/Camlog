@@ -38,7 +38,7 @@ if (route == "/")
                 pagename = join(datasplitted[1:], " ");
             };
         };
-        pagelist += %"<li><a href=\"/p/" + replace(page, ".qm", "") + %".qo\">$pagename</a></li>";
+        pagelist += %"<li><a href=\"/p/" + replace(page, ".qm", "") + %"\">$pagename</a></li>";
     };
     content = format(read("views/index.html"));
     webutil.htmlPage(content);
@@ -51,7 +51,7 @@ else
         if (len(splitted) == 1) {
             webutil.redirect("/");
         } else {
-            pagecontent = read("pages/" + replace(splitted[1], ".qo", ".qm"));
+            pagecontent = read("pages/" + splitted[1] + ".qm");
             if (pagecontent == None) {
                 webutil.error("404 Not Found");
             } else {
