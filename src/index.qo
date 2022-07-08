@@ -25,7 +25,18 @@ if (route == "/")
     pagelist = "";
     foreach &page in filelist("./pages")
     {
-        pagename = readline("./pages/" + page);
+        pagecontent = read("pages/" + page);
+        splitted = split(pagecontent, %"\n-----\n");
+        metadata = split(splitted[0], %"\n");
+        foreach &data in metadata
+        {
+            datasplitted = split(data, " ");
+            datasplitted = deleteBlank(datasplitted);
+            if (datasplitted[0] == "title")
+            {
+                pagename = join(datasplitted[1:], " ");
+            };
+        };
         pagelist += %"<li><a href=\"/p/" + replace(page, ".txt", "") + %".qo\">$pagename</a></li>";
     };
     content = format(read("views/index.html"));
