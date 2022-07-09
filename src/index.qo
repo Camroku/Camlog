@@ -1,7 +1,7 @@
 #!/usr/local/bin/qo
-include wutils;
-include qomar;
-include sort;
+include lib.wutils;
+include lib.qomar;
+include lib.sort;
 include qcf;
 include qo;
 
