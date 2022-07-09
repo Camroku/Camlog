@@ -13,7 +13,6 @@ func htmlPage(page)
 func error(errorcode)
 {
     include config;
-    footer = format(read("views/footer.html"));
     header = format(read("views/header.html"));
     print(%"Content-Type: text/html\nStatus: $errorcode\n\n");
     print(format(read("views/error.html")));
