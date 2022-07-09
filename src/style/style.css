@@ -138,3 +138,8 @@ div.content {
     margin-left: 15%;
     margin-right: 15%;
 }
+
+pre {
+    border: 1px solid #303030;
+    padding: 3px;
+}
