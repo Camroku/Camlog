@@ -12,8 +12,8 @@ class QomarCompiler:
         self.current_char = self.text[self.pos]
         self.out = ""
 
-    def advance(self):
-        self.pos += 1
+    def advance(self, characters=1):
+        self.pos += characters
         if self.pos > len(self.text) - 1:
             self.current_char = None
         else:
@@ -86,7 +86,13 @@ class QomarCompiler:
         escaped = False
         bold = False
         italic = False
+        header = 0
         while self.current_char is not None:
+            if self.current_char == '\n' and header != 0:
+                self.out += f"</h{str(header)}>"
+                header = 0
+                self.advance()
+                continue
             if self.current_char.isspace():
                 self.skipspace()
                 continue
@@ -112,12 +118,71 @@ class QomarCompiler:
                     italic = not italic
                 elif self.current_char == '\\':
                     escaped = True
+                    self.advance()
                     continue
+                elif self.peek(-1) == '\n' and \
+                    self.current_char == '-' and \
+                    self.peek() == '>' and \
+                    self.peek(2) == ' ':
+                        self.out += "<h1>"
+                        header = 1
+                        self.advance(2)
+                elif self.peek(-1) == '\n' and \
+                    self.current_char == '-' and \
+                    self.peek() == '-' and \
+                    self.peek(2) == '>' and \
+                    self.peek(3) == ' ':
+                        self.out += "<h2>"
+                        header = 2
+                        self.advance(3)
+                elif self.peek(-1) == '\n' and \
+                    self.current_char == '-' and \
+                    self.peek() == '-' and \
+                    self.peek(2) == '-' and \
+                    self.peek(3) == '>' and \
+                    self.peek(4) == ' ':
+                        self.out += "<h3>"
+                        header = 3
+                        self.advance(4)
+                elif self.peek(-1) == '\n' and \
+                    self.current_char == '-' and \
+                    self.peek() == '-' and \
+                    self.peek(2) == '-' and \
+                    self.peek(3) == '-' and \
+                    self.peek(4) == '>' and \
+                    self.peek(5) == ' ':
+                        self.out += "<h4>"
+                        header = 4
+                        self.advance(5)
+                elif self.peek(-1)    == '\n' and \
+                    self.current_char == '-' and \
+                    self.peek()       == '-' and \
+                    self.peek(2)      == '-' and \
+                    self.peek(3)      == '-' and \
+                    self.peek(4)      == '-' and \
+                    self.peek(5)      == '>' and \
+                    self.peek(6)      == ' ':
+                        self.out += "<h5>"
+                        header = 5
+                        self.advance(6)
+                elif self.peek(-1) == '\n' and \
+                    self.current_char == '-' and \
+                    self.peek() == '-' and \
+                    self.peek(2)      == '-' and \
+                    self.peek(3)      == '-' and \
+                    self.peek(4)      == '-' and \
+                    self.peek(5)      == '-' and \
+                    self.peek(6)      == '>' and \
+                    self.peek(7)      == ' ':
+                        self.out += "<h6>"
+                        header = 6
+                        self.advance(7)
                 else:
                     self.out += self.current_char
                 escaped = False
             else:
                 self.out += self.current_char
+                escaped = False
             self.advance()
         
         return self.out

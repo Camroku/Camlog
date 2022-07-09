@@ -133,14 +133,6 @@ input[type="range"]::-moz-range-thumb {
     cursor: pointer;
 }
 
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: auto;
-    text-align: center;
-}
-
 div.content {
     margin: 10px;
     margin-left: 15%;

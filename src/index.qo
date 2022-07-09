@@ -12,7 +12,6 @@ author = config.author;
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
 
-footer = format(read("views/footer.html"));
 header = format(read("views/header.html"));
 
 func deleteBlank(list)

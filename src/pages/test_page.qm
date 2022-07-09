@@ -15,3 +15,11 @@ This is block code.
 ''bold text''
 'italic text'
 '''italic and bold text'''
+
+-> This is a header
+--> This a smaller one
+---> This is smaller
+----> About a normal text!
+Here\'s a normal text for comparison
+-----> Too small!
+------> Almost unreadable!

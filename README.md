@@ -116,3 +116,15 @@ The example explains itself.
 
 '''italic and bold text'''
 ```
+
+#### Headers
+Headers can be achieved with `-> header` ... `------> header`, compiled as `<hN>` where N is the count of `-` characters.
+```
+-> This is a header
+--> This a smaller one
+---> This is smaller
+----> About a normal text!
+Here\'s a normal text for comparison
+-----> Too small!
+------> Almost unreadable!
+```
