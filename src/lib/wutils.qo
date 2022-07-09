@@ -12,7 +12,9 @@ func htmlPage(page)
 
 func error(errorcode)
 {
-    include config;
+    include qcf;
+    qcf.new("config.qcf", &config);
+    config.author = config.get("author");
     header = format(read("views/header.html"));
     print(%"Content-Type: text/html\nStatus: $errorcode\n\n");
     print(format(read("views/error.html")));
