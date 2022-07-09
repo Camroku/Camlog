@@ -76,7 +76,7 @@ You can use HTML in pages. [A markdown-like language](src/lib/qomar.py) is curre
 | -------- | ----------- | --------- |
 | `title` | Set page title | Yes |
 | `date` | Set page creation date, as seconds since epoch | Yes |
-| `author | Set author for this page | No |
+| `author` | Set author for this page | No |
 
 ### `qomar`
 If a feature that you need doesn't exist, then you can simply use HTML.
