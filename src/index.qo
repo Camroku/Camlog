@@ -8,6 +8,7 @@ include qo;
 qcf.new("config.qcf", &config);
 
 config.author = config.get("author");
+author = config.author;
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
 
@@ -94,6 +95,10 @@ else
                     else if (datasplitted[0] == "date")
                     {
                         date = formatdate(toInt(datasplitted[1]), '%Y-%m-%d %H:%M:%S');
+                    }
+                    else if (datasplitted[0] == "author")
+                    {
+                        author = join(datasplitted[1:], " ");
                     };
                 };
                 content = format(read("views/page.html"));

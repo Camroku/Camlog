@@ -1,25 +1,6 @@
 # Clog
 Camroku's Blog.
 
-## Creating a page
-Syntax is as follows:
-```
-title Page title
-date Unix timestamp of when it was written
------
-Content
-```
-
-Example:
-```
-title Test page
-date 1657226570
------
-Hello!
-This is the very first blog page in Clog.
-```
-
-You can use HTML in pages. [A markdown-like language](src/qomar.py) is currently being developed.
 ## Running
 Server configuration requirements:
 * Serve `/index.qo` as a CGI script
@@ -69,4 +50,59 @@ server {
                 fastcgi_index index.qo;
         }
 }
+```
+
+## Creating a page
+Syntax is as follows:
+```
+arg value
+-----
+Content
+```
+
+Example:
+```
+title Test page
+date 1657226570
+-----
+Hello!
+This is the very first blog page in Clog.
+```
+
+You can use HTML in pages. [A markdown-like language](src/lib/qomar.py) is currently being developed.
+
+### Arguments
+| Argument | Description | Required? |
+| -------- | ----------- | --------- |
+| `title` | Set page title | Yes |
+| `date` | Set page creation date, as seconds since epoch | Yes |
+| `author | Set author for this page | No |
+
+### `qomar`
+If a feature that you need doesn't exist, then you can simply use HTML.
+
+All of the things below can be escaped with `\`.
+
+#### Comments
+Everything written between `/*` and `*/` will be ignored by the compiler.
+```
+/* This is a comment! */
+```
+
+#### Code
+Everything written between `` ` `` and `` ` `` will be compiled as inline code, and everything written between ```` ``` ```` and ```` ``` ```` will be compiled as block code.
+````
+`This in inline code!`
+
+```
+This is block code!
+```
+````
+
+#### Paragraphs
+Paragraphs can be splitted with two newlines.
+```
+This is a paragraph.
+
+This is another paragraph.
 ```
