@@ -106,3 +106,13 @@ This is a paragraph.
 
 This is another paragraph.
 ```
+
+#### Text decoration
+The example explains itself.
+```
+''bold text''
+
+'italic text'
+
+'''italic and bold text'''
+```

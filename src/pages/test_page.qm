@@ -11,3 +11,7 @@ This is `code`.
 ```
 This is block code.
 ```
+
+''bold text''
+'italic text'
+'''italic and bold text'''

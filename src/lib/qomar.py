@@ -84,6 +84,8 @@ class QomarCompiler:
 
     def compile(self):
         escaped = False
+        bold = False
+        italic = False
         while self.current_char is not None:
             if self.current_char.isspace():
                 self.skipspace()
@@ -95,6 +97,19 @@ class QomarCompiler:
                     self.blockcode()
                 elif self.current_char == '`':
                     self.code()
+                elif self.current_char == '\'' and self.peek() == '\'':
+                    if bold:
+                        self.out += "</b>"
+                    else:
+                        self.out += "<b>"
+                    bold = not bold
+                    self.advance()
+                elif self.current_char == '\'':
+                    if italic:
+                        self.out += "</i>"
+                    else:
+                        self.out += "<i>"
+                    italic = not italic
                 elif self.current_char == '\\':
                     escaped = True
                     continue
