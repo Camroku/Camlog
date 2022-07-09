@@ -69,7 +69,7 @@ Hello!
 This is the very first blog page in Clog.
 ```
 
-You can use HTML in pages. [A markdown-like language](src/lib/qomar.py) is currently being developed.
+You can use HTML in pages. [A markdown-like language](#qomar) is currently being developed.
 
 ### Arguments
 | Argument | Description | Required? |
