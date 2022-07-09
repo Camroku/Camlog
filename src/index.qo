@@ -104,6 +104,55 @@ else
                 wutils.htmlPage(content);
             };
         };
+    } else if (splitted[0] == "a") {
+        if (len(splitted) == 1) {
+            userlist = "";
+            foreach &user in filelist("./authors")
+            {
+                username = replace(user, ".qm", "");
+                userlist += %"<h3><a href=\"/a/$username\">$username</a></h3>";
+            };
+            content = format(read("views/authors.html"));
+            wutils.htmlPage(content);
+        } else {
+            pagecontent = read("authors/" + splitted[1] + ".qm");
+            if (pagecontent == None) {
+                wutils.error("404 Not Found");
+            } else {
+                username = splitted[1];
+                splitted = split(pagecontent, %"\n-----\n");
+                pagecontent = qomar.compile.html(join(splitted[1:], %"\n-----\n"));
+                metadata = split(splitted[0], %"\n");
+                realname = "Unknown";
+                pfp = "";
+                links = [];
+                foreach &data in metadata
+                {
+                    datasplitted = split(data, " ");
+                    datasplitted = deleteBlank(datasplitted);
+                    if (datasplitted[0] == "realname")
+                    {
+                        realname = join(datasplitted[1:], " ");
+                    }
+                    else if (datasplitted[0] == "pfp")
+                    {
+                        pfp = join(datasplitted[1:], " ");
+                    }
+                    else if (datasplitted[0] == "link")
+                    {
+                        data = split(join(datasplitted[1:], " "), " | ");
+                        links += [%"<a href=\"" + data[1] + %"\">" + data[0] + "</a>"];
+                    };
+                };
+                if (pfp == "")
+                {
+                    pfp = "https://ui-avatars.com/api/?name=" + replace(realname, " ", "+");
+                };
+                links = join(links, " | ");
+                content = format(read("views/author.html"));
+                wutils.htmlPage(content);
+            };
+        };
     } else {
         wutils.error("404 Not Found");
     };

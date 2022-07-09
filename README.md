@@ -53,6 +53,8 @@ server {
 ```
 
 ## Creating a page
+You should create a file under `src/pages/` with `.qm` extension.
+
 Syntax is as follows:
 ```
 arg value
@@ -78,18 +80,38 @@ You can use HTML in pages. [A markdown-like language](#qomar) is currently being
 | `date` | Set page creation date, as seconds since epoch | Yes |
 | `author` | Set author for this page | No |
 
-### `qomar`
+## Creating an author page
+You should create a file under `src/authors/` with `.qm` extension.
+
+Example:
+```
+realname Çınar Yılmaz
+pfp https://avatars.githubusercontent.com/u/79412062
+link My Website | https://camroku.tech/
+link QoLang | https://qolang.camroku.tech/
+-----
+Hello! I\'m Arnolxu.
+```
+
+### Arguments
+| Argument | Description | Required? |
+| -------- | ----------- | --------- |
+| `realname` | Author's IRL name | No |
+| `pfp` | Link to the author's profile photo | No |
+| `link` | A link (Syntax: `link Text | Link`) | No |
+
+## `qomar`
 If a feature that you need doesn't exist, then you can simply use HTML.
 
 All of the things below can be escaped with `\`.
 
-#### Comments
+### Comments
 Everything written between `/*` and `*/` will be ignored by the compiler.
 ```
 /* This is a comment! */
 ```
 
-#### Code
+### Code
 Everything written between `` ` `` and `` ` `` will be compiled as inline code, and everything written between ```` ``` ```` and ```` ``` ```` will be compiled as block code.
 ````
 `This in inline code!`
@@ -99,7 +121,7 @@ This is block code!
 ```
 ````
 
-#### Paragraphs
+### Paragraphs
 Paragraphs can be splitted with two newlines.
 ```
 This is a paragraph.
@@ -107,7 +129,7 @@ This is a paragraph.
 This is another paragraph.
 ```
 
-#### Text decoration
+### Text decoration
 The example explains itself.
 ```
 ''bold text''
@@ -117,7 +139,7 @@ The example explains itself.
 '''italic and bold text'''
 ```
 
-#### Headers
+### Headers
 Headers can be achieved with `-> header` ... `------> header`, compiled as `<hN>` where N is the count of `-` characters.
 ```
 -> This is a header
