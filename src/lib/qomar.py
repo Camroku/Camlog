@@ -38,12 +38,15 @@ class QomarCompiler:
         self.advance()
         escaped = False
         self.out += "<code>"
-        while True:
+        while self.current_char is not None:
             if escaped:
                 self.out += self.current_char
+                escaped = False
             else:
                 if self.current_char == '`':
                     break
+                elif self.current_char == '\\':
+                    escaped = True
                 else:
                     self.out += self.current_char
             self.advance()
@@ -56,12 +59,15 @@ class QomarCompiler:
         self.advance()
         escaped = False
         self.out += "<pre>"
-        while True:
+        while self.current_char is not None:
             if escaped:
                 self.out += self.current_char
+                escaped = False
             else:
                 if self.current_char == '`' and self.peek() == '`' and self.peek(2) == '`':
                     break
+                elif self.current_char == '\\':
+                    escaped = True
                 else:
                     self.out += self.current_char
             self.advance()

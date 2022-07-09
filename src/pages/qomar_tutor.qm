@@ -1,0 +1,83 @@
+title qomar Tutorial
+date 1657402127
+-----
+If a feature that you need doesn\'t exist, then you can simply use HTML.
+
+All of the things below can be escaped with `\\`.
+
+--> Comments
+Everything written between `/*` and `*/` will be ignored by the compiler.
+
+Input:
+```
+/* This is a comment! */
+```
+
+Output:
+/* This is a comment! */
+
+--> Code
+Everything written between `\`` and `\`` will be compiled as inline code, and everything written between `\`\`\`` and `\`\`\`` will be compiled as block code.
+
+Input:
+```
+Some `Inline code`
+Some \``` Block code \```
+```
+
+Output:
+Some `Inline code`
+Some ``` Block code ```
+
+--> Paragraphs
+Paragraphs can be splitted with two newlines.
+
+Input:
+```
+This is a paragraph.
+
+This is another paragraph.
+```
+
+Output:
+This is a paragraph.
+
+This is another paragraph.
+
+--> Text decoration
+The example explains itself.
+
+Input:
+```
+''bold text''
+'italic text'
+'''italic and bold text'''
+```
+
+Output:
+''bold text''
+'italic text'
+'''italic and bold text'''
+
+--> Headers
+Headers can be achieved with `-> header` ... `------> header`, compiled as `<hN>` where N is the count of `-` characters.
+
+Input:
+```
+-> This is a header
+--> This a smaller one
+---> This is smaller
+----> About a normal text!
+Here\\'s a normal text for comparison
+-----> Too small!
+------> Almost unreadable!
+```
+
+Output:
+-> This is a header
+--> This a smaller one
+---> This is smaller
+----> About a normal text!
+Here\'s a normal text for comparison
+-----> Too small!
+------> Almost unreadable!
