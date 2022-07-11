@@ -133,3 +133,14 @@ It will still be a quote until there are 2 newlines
 like:
 
 this
+
+--> Mention
+Mention an author.
+
+Input:
+```
+@Arnolxu
+```
+
+Output:
+@Arnolxu

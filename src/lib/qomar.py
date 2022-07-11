@@ -88,6 +88,18 @@ class QomarCompiler:
         if self.peek(-1) != '\n':
             self.out += " "
 
+    def mention(self):
+        self.advance()
+        user = ""
+        while self.current_char is not None:
+            if self.current_char.isspace():
+                    break
+            else:
+                user += self.current_char
+            self.advance()
+
+        self.out += f"<a href=\"/a/{user}\">@{user}</a>"
+
     def compile(self):
         escaped = False
         bold = False
@@ -225,6 +237,9 @@ class QomarCompiler:
                         self.out += "<blockquote>"
                         blockquote = True
                         self.advance()
+                elif self.current_char == '@':
+                    self.mention()
+                    continue
                 else:
                     self.out += self.current_char
                 escaped = False
