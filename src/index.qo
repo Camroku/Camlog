@@ -226,7 +226,13 @@ else
                                 retlist += [join(argsplitted[1:], " ")];
                             };
                         };
-                        wutils.plainText(join(retlist, %"\n"));
+                        out = join(retlist, %"\n");
+                        if (out == "" && toget == "author") {
+                            out = config.author;
+                        } else if (out == ""){
+                            out = "Unknown";
+                        };
+                        wutils.plainText(out);
                     };
                 };
             };
