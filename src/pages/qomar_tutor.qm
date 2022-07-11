@@ -83,7 +83,7 @@ Here\'s a normal text for comparison
 ------> Almost unreadable!
 
 --> Lists
-I don\'t know how to explain, see below.
+I don\'t know how to explain a list, see below.
 
 Input:
 ```
@@ -114,3 +114,22 @@ Output:
 # an
 # ordered
 # list!
+
+--> Quote
+Text that do not belong to you.
+
+Input:
+```
+> This is a quote!
+It will still be a quote until there are 2 newlines
+like:
+
+this
+```
+
+Output:
+> This is a quote!
+It will still be a quote until there are 2 newlines
+like:
+
+this

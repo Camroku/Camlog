@@ -95,6 +95,7 @@ class QomarCompiler:
         header = 0
         ulist = False
         olist = False
+        blockquote = False
         while self.current_char is not None:
             if self.current_char == '\n' and self.peek() == '\n' and ulist:
                 self.advance(2)
@@ -114,6 +115,11 @@ class QomarCompiler:
                 self.out += f"</h{str(header)}>"
                 header = 0
                 self.advance()
+                continue
+            if self.current_char == '\n' and self.peek() == '\n' and blockquote:
+                self.out += f"</blockquote>"
+                blockquote = True
+                self.advance(2)
                 continue
             if self.current_char.isspace():
                 self.skipspace()
@@ -213,6 +219,12 @@ class QomarCompiler:
                         self.out += "<ol>"
                         olist = True
                     self.out += "<li>"
+                elif self.peek(-1) == '\n' and \
+                    self.current_char == '>' and \
+                    self.peek() == ' ':
+                        self.out += "<blockquote>"
+                        blockquote = True
+                        self.advance()
                 else:
                     self.out += self.current_char
                 escaped = False
