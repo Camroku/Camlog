@@ -93,7 +93,17 @@ class QomarCompiler:
         bold = False
         italic = False
         header = 0
+        ulist = False
+        olist = False
         while self.current_char is not None:
+            if self.current_char == '\n' and self.peek() == '\n' and ulist:
+                self.advance(2)
+                self.out += "</ul>"
+                continue
+            elif self.current_char == '\n' and self.peek() == '\n' and olist:
+                self.advance(2)
+                self.out += "</ol>"
+                continue
             if self.current_char == '\n' and header != 0:
                 self.out += f"</h{str(header)}>"
                 header = 0
@@ -160,29 +170,43 @@ class QomarCompiler:
                         self.out += "<h4>"
                         header = 4
                         self.advance(5)
-                elif self.peek(-1)    == '\n' and \
+                elif self.peek(-1) == '\n' and \
                     self.current_char == '-' and \
-                    self.peek()       == '-' and \
-                    self.peek(2)      == '-' and \
-                    self.peek(3)      == '-' and \
-                    self.peek(4)      == '-' and \
-                    self.peek(5)      == '>' and \
-                    self.peek(6)      == ' ':
+                    self.peek() == '-' and \
+                    self.peek(2) == '-' and \
+                    self.peek(3) == '-' and \
+                    self.peek(4) == '-' and \
+                    self.peek(5) == '>' and \
+                    self.peek(6) == ' ':
                         self.out += "<h5>"
                         header = 5
                         self.advance(6)
                 elif self.peek(-1) == '\n' and \
                     self.current_char == '-' and \
                     self.peek() == '-' and \
-                    self.peek(2)      == '-' and \
-                    self.peek(3)      == '-' and \
-                    self.peek(4)      == '-' and \
-                    self.peek(5)      == '-' and \
-                    self.peek(6)      == '>' and \
-                    self.peek(7)      == ' ':
+                    self.peek(2) == '-' and \
+                    self.peek(3) == '-' and \
+                    self.peek(4) == '-' and \
+                    self.peek(5) == '-' and \
+                    self.peek(6) == '>' and \
+                    self.peek(7) == ' ':
                         self.out += "<h6>"
                         header = 6
                         self.advance(7)
+                elif self.peek(-1) == '\n' and self.current_char == '*':
+                    if not ulist:
+                        if self.out[-4:] == "<br>":
+                            self.out = self.out[:-4]
+                        self.out += "<ul>"
+                        ulist = True
+                    self.out += "<li>"
+                elif self.peek(-1) == '\n' and self.current_char == '#':
+                    if not olist:
+                        if self.out[-4:] == "<br>":
+                            self.out = self.out[:-4]
+                        self.out += "<ol>"
+                        olist = True
+                    self.out += "<li>"
                 else:
                     self.out += self.current_char
                 escaped = False
@@ -190,6 +214,11 @@ class QomarCompiler:
                 self.out += self.current_char
                 escaped = False
             self.advance()
+        
+        if ulist:
+            self.out += "</ul>"
+        if olist:
+            self.out += "</ol>"
         
         return self.out
 

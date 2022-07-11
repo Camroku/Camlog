@@ -81,3 +81,36 @@ Output:
 Here\'s a normal text for comparison
 -----> Too small!
 ------> Almost unreadable!
+
+--> Lists
+I don\'t know how to explain, see below.
+
+Input:
+```
+* This
+* is
+* a
+* unordered
+* list!
+  * Sub-lists are not possible, currently.
+
+# This
+# is
+# an
+# ordered
+# list!
+```
+
+Output:
+* This
+* is
+* a
+* unordered
+* list!
+  * Sub-lists are not possible, currently.
+
+# This
+# is
+# an
+# ordered
+# list!
