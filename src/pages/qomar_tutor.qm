@@ -144,3 +144,18 @@ Input:
 
 Output:
 @Arnolxu
+
+--> Link
+Create a link.
+
+Input:
+```
+[https://qolang.camroku.tech QoLang Website]
+[/p/test_page Test Page]
+[https://qolang.camroku.tech]
+```
+
+Output:
+[https://qolang.camroku.tech QoLang Website]
+[/p/test_page Test Page]
+[https://qolang.camroku.tech]

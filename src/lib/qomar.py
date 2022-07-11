@@ -100,6 +100,26 @@ class QomarCompiler:
 
         self.out += f"<a href=\"/a/{user}\">@{user}</a>"
 
+    def link(self):
+        self.advance()
+        linkntext = ""
+        while self.current_char is not None:
+            if self.current_char == ']':
+                    break
+            else:
+                linkntext += self.current_char
+            self.advance()
+        self.advance()
+        
+        splitted = linkntext.split(' ')
+        link = splitted[0]
+        if len(splitted) > 1:
+            text = ' '.join(splitted[1:])
+        else:
+            text = link
+
+        self.out += f"<a href=\"{link}\">{text}</a>"
+
     def compile(self):
         escaped = False
         bold = False
@@ -239,6 +259,9 @@ class QomarCompiler:
                         self.advance()
                 elif self.current_char == '@':
                     self.mention()
+                    continue
+                elif self.current_char == '[':
+                    self.link()
                     continue
                 else:
                     self.out += self.current_char
