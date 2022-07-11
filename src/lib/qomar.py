@@ -99,10 +99,16 @@ class QomarCompiler:
             if self.current_char == '\n' and self.peek() == '\n' and ulist:
                 self.advance(2)
                 self.out += "</ul>"
+                ulist = False
                 continue
             elif self.current_char == '\n' and self.peek() == '\n' and olist:
                 self.advance(2)
                 self.out += "</ol>"
+                olist = False
+                continue
+            elif self.current_char == '\n' and (ulist or olist):
+                self.advance(1)
+                self.out += "</li>"
                 continue
             if self.current_char == '\n' and header != 0:
                 self.out += f"</h{str(header)}>"
