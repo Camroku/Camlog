@@ -118,7 +118,7 @@ class QomarCompiler:
                 continue
             if self.current_char == '\n' and self.peek() == '\n' and blockquote:
                 self.out += f"</blockquote>"
-                blockquote = True
+                blockquote = False
                 self.advance(2)
                 continue
             if self.current_char.isspace():
