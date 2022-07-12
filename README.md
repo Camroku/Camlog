@@ -10,7 +10,7 @@ Server configuration requirements:
 * Serve all `.js` and `.css` files as static files
 
 Other requirements:
-* Latest version of QoLang, which means you have to build it yourself if the latest version isn't a stable version.
+* Latest version of QoLang, built with `IMPORTS=sqlite3`.
 
 After configuring these, you can get your Clog blog to run just like any PHP website.
 

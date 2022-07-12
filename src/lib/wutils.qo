@@ -23,7 +23,7 @@ func error(errorcode)
 
 func redirect(loc)
 {
-    print(%"Location: $loc\n\n");
+    print(%"Status: 302 Found\nLocation: $loc\n\n");
 };
 
 func plainText(page)
