@@ -83,6 +83,7 @@ else
                 splitted = split(pagecontent, %"\n-----\n");
                 pagecontent = qomar.compile.html(join(splitted[1:], %"\n-----\n"));
                 metadata = split(splitted[0], %"\n");
+                taglist = [];
                 foreach &data in metadata
                 {
                     datasplitted = split(data, " ");
@@ -98,8 +99,14 @@ else
                     else if (datasplitted[0] == "author")
                     {
                         author = join(datasplitted[1:], " ");
+                    }
+                    else if (datasplitted[0] == "tag")
+                    {
+                        tag = datasplitted[1];
+                        taglist += [%"<a href=\"/t/$tag\">#$tag</a>"];
                     };
                 };
+                taglist = join(taglist, ", ");
                 content = format(read("views/page.html"));
                 wutils.htmlPage(content);
             };
@@ -205,6 +212,66 @@ else
                 wutils.htmlPage(content);
             };
         };
+    } else if (splitted[0] == "t") {
+        if (len(splitted) == 1) {
+            wutils.redirect("/");
+        } else {
+            tag = splitted[1];
+            pagelist = [];
+            datelist = [];
+            foreach &page in filelist("./pages")
+            {
+                pagcontent = read("pages/" + page);
+                splitted = split(pagcontent, %"\n-----\n");
+                metadata = split(splitted[0], %"\n");
+                foundTag = False;
+                isTag = False;
+                foreach &data in metadata
+                {
+                    datasplitted = split(data, " ");
+                    datasplitted = deleteBlank(datasplitted);
+                    if (datasplitted[0] == "tag")
+                    {
+                        foundTag = True;
+                        if (join(datasplitted[1:], " ") == tag)
+                        {
+                            isTag = True;
+                        };
+                    }
+                    else if (datasplitted[0] == "date")
+                    {
+                        date = toInt(datasplitted[1]);
+                    }
+                    else if (datasplitted[0] == "title")
+                    {
+                        title = join(datasplitted[1:], " ");
+                    };
+                };
+                if (foundTag == False) {
+                    isTag = (username == config.author);
+                };
+                if (isTag) {
+                    pagelist += [[page, title]];
+                    datelist += [date];
+                };
+            };
+            ret = sort.sortbyvalr(pagelist, datelist);
+            pages = ret[0];
+            datelist = ret[1];
+            remove(ret);
+            pagelist = "";
+            i = 0;
+            foreach &page in pages
+            {
+                pagelink = replace(page[0], ".qm", "");
+                pagename = page[1];
+                pagedate = formatdate(datelist[i], '%Y-%m-%d %H:%M:%S');
+                pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
+                i += 1;
+            };
+            content = format(read("views/tag.html"));
+            wutils.htmlPage(content);
+        };
     } else if (splitted[0] == "api") {
         if (len(splitted) == 1) {
             wutils.redirect("/");
@@ -276,7 +343,8 @@ else
                         wutils.plainText(join(retlist, %"\n"));
                     };
                 };
-            } else if (splitted[1] == "pages"){
+            }
+            else if (splitted[1] == "pages"){
                 if (len(splitted) == 2) {
                     pagelist = [];
                     foreach &page in filelist("./pages")
@@ -317,6 +385,30 @@ else
                         };
                         wutils.plainText(out);
                     };
+                };
+            } else if (splitted[1] == "tags"){
+                if (len(splitted) == 3){
+                    tagtoget = splitted[2];
+                    pagelist = [];
+                    foreach &page in filelist("./pages")
+                    {
+                        pagecontent = read("pages/" + page);
+                        splitted = split(pagecontent, %"\n-----\n");
+                        metadata = split(splitted[0], %"\n");
+                        foreach &data in metadata
+                        {
+                            datasplitted = split(data, " ");
+                            datasplitted = deleteBlank(datasplitted);
+                            if (datasplitted[0] == "tag")
+                            {
+                                if (datasplitted[1] == tagtoget)
+                                {
+                                    pagelist += [replace(page, ".qm", "")];
+                                };
+                            };
+                        };
+                    };
+                    wutils.plainText(join(pagelist, %"\n"));
                 };
             };
         };

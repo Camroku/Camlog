@@ -79,6 +79,7 @@ You can use HTML in pages. [A markdown-like language](#qomar) is currently being
 | `title` | Set page title | Yes |
 | `date` | Set page creation date, as seconds since epoch | Yes |
 | `author` | Set author for this page | No |
+| `tag` | Add a tag for this page | No |
 
 ## Creating an author page
 You should create a file under `src/authors/` with `.qm` extension.
