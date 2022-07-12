@@ -120,6 +120,18 @@ class QomarCompiler:
 
         self.out += f"<a href=\"{link}\">{text}</a>"
 
+    def tag(self):
+        self.advance()
+        tag = ""
+        while self.current_char is not None:
+            if self.current_char.isspace():
+                    break
+            else:
+                tag += self.current_char
+            self.advance()
+
+        self.out += f"<a href=\"/t/{tag}\">#{tag}</a>"
+
     def compile(self):
         escaped = False
         bold = False
@@ -244,7 +256,7 @@ class QomarCompiler:
                         self.out += "<ul>"
                         ulist = True
                     self.out += "<li>"
-                elif self.peek(-1) == '\n' and self.current_char == '#':
+                elif self.peek(-1) == '\n' and self.current_char == '^':
                     if not olist:
                         if self.out[-4:] == "<br>":
                             self.out = self.out[:-4]
@@ -262,6 +274,9 @@ class QomarCompiler:
                     continue
                 elif self.current_char == '[':
                     self.link()
+                    continue
+                elif self.current_char == '#':
+                    self.tag()
                     continue
                 else:
                     self.out += self.current_char

@@ -96,11 +96,11 @@ Input:
 * list!
   * Sub-lists are not possible, currently.
 
-# This
-# is
-# an
-# ordered
-# list!
+^ This
+^ is
+^ an
+^ ordered
+^ list!
 ```
 
 Output:
@@ -111,11 +111,11 @@ Output:
 * list!
   * Sub-lists are not possible, currently.
 
-# This
-# is
-# an
-# ordered
-# list!
+^ This
+^ is
+^ an
+^ ordered
+^ list!
 
 --> Quote
 Text that do not belong to you.
@@ -161,3 +161,14 @@ Output:
 [https://qolang.camroku.tech QoLang Website]
 [/p/test_page Test Page]
 [https://qolang.camroku.tech]
+
+--> Tags
+A link to a tag.
+
+Input:
+```
+#test
+```
+
+Output:
+#test
