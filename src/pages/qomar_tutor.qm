@@ -3,6 +3,8 @@ date 1657402127
 tag tutorial
 tag qomar
 -----
+Qomar is a new markup language for writing blog posts.
+
 If a feature that you need doesn\'t exist, then you can simply use HTML.
 
 All of the things below can be escaped with `\\`.

@@ -8,6 +8,8 @@ include qo;
 qcf.new("config.qcf", &config);
 
 config.author = config.get("author");
+config.url = config.get("link");
+config.desc = config.get("description");
 author = config.author;
 
 route = deleteAfter(qo.env("REQUEST_URI"), '?');
@@ -412,6 +414,43 @@ else
                 };
             };
         };
+    } else if (splitted[0] == "feed") {
+        print(%"Content-type: application/rss+xml\n\n");
+        print(%"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><rss version=\"2.0\"><channel>");
+        print(%"<title>$config.author's blog</title>");
+        print(%"<link>$config.url</link>");
+        print(%"<description>$config.desc</description>");
+        print(%"<language>en-us</language>");
+        foreach &page in filelist("./pages")
+        {
+            title = replace(replace(page, ".qm", ""), "_", " ");
+            pagecontent = read("pages/" + page);
+            splitted = split(pagecontent, %"\n-----\n");
+            metadata = split(splitted[0], %"\n");
+            pagecont = join(splitted[1:], "\n-----\n");
+            foreach &data in metadata
+            {
+                datasplitted = split(data, " ");
+                datasplitted = deleteBlank(datasplitted);
+                if (datasplitted[0] == "date")
+                {
+                    date = formatdate(toInt(datasplitted[1]), "%a, %d %B %Y %T %z");
+                } else if (datasplitted[0] == "title")
+                {
+                    title = join(datasplitted[1:], " ");
+                };
+            };
+            pagedesc = split(pagecont, %"\n");
+            pagedesc = pagedesc[0];
+            page = replace(page, ".qm", "");
+            print(%"<item>");
+            print(%"<title>$title</title>");
+            print(%"<link>$config.url/p/$page</link>");
+            print(%"<description>$pagedesc</description>");
+            print(%"<pubDate>$date</pubDate>");
+            print(%"</item>");
+        };
+        print(%"</channel></rss>");
     } else {
         wutils.error("404 Not Found");
     };

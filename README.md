@@ -73,6 +73,8 @@ This is the very first blog page in Clog.
 
 You can use HTML in pages. [A markdown-like language](#qomar) is currently being developed.
 
+Import note: The first line should be a short description without anything that would look weird as plain text, because the first line is used as the description for the RSS feed.
+
 ### Arguments
 | Argument | Description | Required? |
 | -------- | ----------- | --------- |
