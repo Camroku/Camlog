@@ -1,4 +1,4 @@
-# Clog
+# Camlog
 Camroku's Blog.
 
 ## Running
@@ -22,7 +22,7 @@ server {
         listen 80 default_server;
         listen [::]:80 default_server;
 
-        root /home/cinar/Clog/src;
+        root /home/cinar/Camlog/src;
 
         index index.qo;
 
@@ -68,7 +68,7 @@ title Test page
 date 1657226570
 -----
 Hello!
-This is the very first blog page in Clog.
+This is the very first blog page in Camlog.
 ```
 
 You can use HTML in pages. [A markdown-like language](#qomar) is currently being developed.
