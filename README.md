@@ -101,7 +101,7 @@ Hello! I\'m Arnolxu.
 | -------- | ----------- | --------- |
 | `realname` | Author's IRL name | No |
 | `pfp` | Link to the author's profile photo | No |
-| `link` | A link (Syntax: `link Text | Link`) | No |
+| `link` | A link (Syntax: `link Text \| Link`) | No |
 
 ## `qomar`
 A markup language, developed for Clog. See [tutorial](src/pages/qomar_tutor.qm).
