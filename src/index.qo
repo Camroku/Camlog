@@ -157,22 +157,25 @@ else
                 realname = "Unknown";
                 pfp = "";
                 links = [];
-                foreach &data in metadata
-                {
-                    datasplitted = split(data, " ");
-                    datasplitted = deleteBlank(datasplitted);
-                    if (datasplitted[0] == "realname")
+                metadata = deleteBlank(metadata);
+                if (len(metadata) > 0) {
+                    foreach &data in metadata
                     {
-                        realname = join(datasplitted[1:], " ");
-                    }
-                    else if (datasplitted[0] == "pfp")
-                    {
-                        pfp = join(datasplitted[1:], " ");
-                    }
-                    else if (datasplitted[0] == "link")
-                    {
-                        data = split(join(datasplitted[1:], " "), " | ");
-                        links += [%"<a href=\"" + data[1] + %"\">" + data[0] + "</a>"];
+                        datasplitted = split(data, " ");
+                        datasplitted = deleteBlank(datasplitted);
+                        if (datasplitted[0] == "realname")
+                        {
+                            realname = join(datasplitted[1:], " ");
+                        }
+                        else if (datasplitted[0] == "pfp")
+                        {
+                            pfp = join(datasplitted[1:], " ");
+                        }
+                        else if (datasplitted[0] == "link")
+                        {
+                            data = split(join(datasplitted[1:], " "), " | ");
+                            links += [%"<a href=\"" + data[1] + %"\">" + data[0] + "</a>"];
+                        };
                     };
                 };
                 if (pfp == "")
@@ -390,6 +393,7 @@ else
                     db.exec(%"INSERT INTO users (nickname, password) VALUES ('$username', '$encryptedpass')");
                     db.exec(%"INSERT INTO sessions (ip, nickname) VALUES ('$ip', '$username')");
                     db.commit();
+                    writef(%"./authors/" + username +".qm", %"\n-----\nNo description.");
                     wutils.redirect("/");
                 }
                 else if (pass[0] == db.hash(password))
