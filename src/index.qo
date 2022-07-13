@@ -407,6 +407,8 @@ else
             };
             # password = db.hash("password");
         };
+    } else if (splitted[0] == "account") {
+        wutils.error("501 Not Implemented");
     } else if (splitted[0] == "logout") {
         db.exec(%"SELECT nickname FROM sessions WHERE ip = '$ip'");
         cs = db.fetchone();
