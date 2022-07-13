@@ -12,7 +12,7 @@ Server configuration requirements:
 Other requirements:
 * Latest version of QoLang, built with `IMPORTS=sqlite3`.
 
-After configuring these, you can get your Clog blog to run just like any PHP website.
+After configuring these, you can get your Clog blog to run just like any PHP website. Don't forget to create `src/authors` and `src/pages` directories.
 
 Example nginx config:
 ```nginx
