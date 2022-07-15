@@ -19,6 +19,7 @@ ip = qo.env("REMOTE_ADDR");
 
 if (reqtype == "POST") {
     unparsedpostdata = input();
+    unparsedpostdata = wutils.url.unquote_plus(unparsedpostdata);
     postdata = [];
     foreach &data in split(unparsedpostdata, '&')
     {
@@ -156,7 +157,6 @@ else
                 metadata = split(splitted[0], %"\n");
                 realname = "Unknown";
                 pfp = "";
-                links = [];
                 metadata = deleteBlank(metadata);
                 if (len(metadata) > 0) {
                     foreach &data in metadata
@@ -170,11 +170,6 @@ else
                         else if (datasplitted[0] == "pfp")
                         {
                             pfp = join(datasplitted[1:], " ");
-                        }
-                        else if (datasplitted[0] == "link")
-                        {
-                            data = split(join(datasplitted[1:], " "), " | ");
-                            links += [%"<a href=\"" + data[1] + %"\">" + data[0] + "</a>"];
                         };
                     };
                 };
@@ -182,7 +177,6 @@ else
                 {
                     pfp = "https://ui-avatars.com/api/?name=" + replace(realname, " ", "+");
                 };
-                links = join(links, " | ");
                 pagelist = [];
                 datelist = [];
                 foreach &page in filelist("./pages")
@@ -405,10 +399,157 @@ else
                     wutils.error("401 Unauthorized");
                 };
             };
-            # password = db.hash("password");
         };
     } else if (splitted[0] == "account") {
-        wutils.error("501 Not Implemented");
+        if (reqtype == "GET") {
+            if (cs == None)
+            {
+                wutils.error("401 Unauthorized");
+            } else {
+                print(cs[0]);
+                pagecontent = read("authors/" + cs[0] + ".qm");
+                if (pagecontent == None) {
+                    wutils.error("404 Not Found");
+                } else {
+                    username = cs[0];
+                    splitted = split(pagecontent, %"\n-----\n");
+                    pagecontent = wutils.html.escape(join(splitted[1:], %"\n-----\n"));
+                    metadata = split(splitted[0], %"\n");
+                    realname = "Unknown";
+                    pfp = "";
+                    metadata = deleteBlank(metadata);
+                    if (len(metadata) > 0) {
+                        foreach &data in metadata
+                        {
+                            datasplitted = split(data, " ");
+                            datasplitted = deleteBlank(datasplitted);
+                            if (datasplitted[0] == "realname")
+                            {
+                                realname = join(datasplitted[1:], " ");
+                            }
+                            else if (datasplitted[0] == "pfp")
+                            {
+                                pfp = join(datasplitted[1:], " ");
+                            };
+                        };
+                    };
+                    if (pfp == "")
+                    {
+                        pfp = "https://ui-avatars.com/api/?name=" + replace(realname, " ", "+");
+                    };
+                    pagelist = [];
+                    datelist = [];
+                    foreach &page in filelist("./pages")
+                    {
+                        pagcontent = read("pages/" + page);
+                        splitted = split(pagcontent, %"\n-----\n");
+                        metadata = split(splitted[0], %"\n");
+                        foundAuthor = False;
+                        isAuthor = False;
+                        foreach &data in metadata
+                        {
+                            datasplitted = split(data, " ");
+                            datasplitted = deleteBlank(datasplitted);
+                            if (datasplitted[0] == "author")
+                            {
+                                foundAuthor = True;
+                                if (join(datasplitted[1:], " ") == username)
+                                {
+                                    isAuthor = True;
+                                };
+                            }
+                            else if (datasplitted[0] == "date")
+                            {
+                                date = toInt(datasplitted[1]);
+                            }
+                            else if (datasplitted[0] == "title")
+                            {
+                                title = join(datasplitted[1:], " ");
+                            };
+                        };
+                        if (foundAuthor == False) {
+                            isAuthor = (username == config.author);
+                        };
+                        if (isAuthor) {
+                            pagelist += [[page, title]];
+                            datelist += [date];
+                        };
+                    };
+                    ret = sort.sortbyvalr(pagelist, datelist);
+                    pages = ret[0];
+                    datelist = ret[1];
+                    remove(ret);
+                    pagelist = "";
+                    i = 0;
+                    foreach &page in pages
+                    {
+                        pagelink = replace(page[0], ".qm", "");
+                        pagename = page[1];
+                        pagedate = formatdate(datelist[i], '%Y-%m-%d %H:%M:%S');
+                        pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
+                        i += 1;
+                    };
+                    content = format(read("views/account.html"));
+                    wutils.htmlPage(content);
+                };
+            };
+        } else if (reqtype == "POST") {
+            if (cs == None)
+            {
+                wutils.error("401 Unauthorized");
+            } else {
+                realname = "Unknown";
+                password = "";
+                pfp = "";
+                pagecontent = "";
+                foreach &data in postdata
+                {
+                    if (data[0] == "realname")
+                    {
+                        realname = join(data[1:], " ");
+                    }
+                    else if (data[0] == "password")
+                    {
+                        password = join(data[1:], " ");
+                    }
+                    else if (data[0] == "pfp")
+                    {
+                        pfp = join(data[1:], " ");
+                    }
+                    else if (data[0] == "pagecontent")
+                    {
+                        pagecontent = join(data[1:], " ");
+                    };
+                };
+                if (password == "")
+                {
+                    wutils.error("400 Bad Request");
+                }
+                else if (db.hash(password) == cs[0])
+                {
+                    wutils.error("401 Unauthorized");
+                }
+                else 
+                {
+                    username = cs[0];
+                    db.exec(%"SELECT password FROM users WHERE nickname = '$username'");
+                    pass = db.fetchone();
+                    if (pass == None)
+                    {
+                        wutils.error("401 Unauthorized");
+                    }
+                    else if (pass[0] == db.hash(password))
+                    {
+                        writef("authors/" + username + ".qm", %"realname $realname\npfp $pfp\n-----\n$pagecontent");
+                        wutils.redirect("/");
+                    }
+                    else
+                    {
+                        wutils.error("401 Unauthorized");
+                    };
+                };
+            };
+        };
     } else if (splitted[0] == "logout") {
         db.exec(%"SELECT nickname FROM sessions WHERE ip = '$ip'");
         cs = db.fetchone();

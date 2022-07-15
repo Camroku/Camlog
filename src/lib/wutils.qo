@@ -2,7 +2,10 @@ __export__ = [
     "htmlPage",
     "error",
     "redirect",
-    "plainText"
+    "plainText",
+    "html.escape",
+    "url.unquote",
+    "url.unquote_plus"
 ];
 
 func htmlPage(page)
@@ -30,4 +33,47 @@ func plainText(page)
 {
     print(%"Content-Type: text/plain\n\n");
     print(page);
+};
+
+func html.escape(text)
+{
+    text = replace(text, %"&", "&amp;");
+    text = replace(text, %"<", "&lt;");
+    text = replace(text, %">", "&gt;");
+    text = replace(text, %"\"", "&quot;");
+    text = replace(text, %"'", "&#39;");
+    return text;
+};
+
+func url.unquote(text)
+{
+    text = split(text, "%");
+    out = text[0];
+    foreach &part in text[1:]
+    {
+        if (len(part) > 1)
+        {
+            hex = toInt("0x" + part[0] + part[1]);
+            out += chr(hex);
+            out += join(part[2:], "");
+        };
+    };
+    return out;
+};
+
+func url.unquote_plus(text)
+{
+    text = replace(text, %"+", " ");
+    text = split(text, "%");
+    out = text[0];
+    foreach &part in text[1:]
+    {
+        if (len(part) > 1)
+        {
+            hex = toInt("0x" + part[0] + part[1]);
+            out += chr(hex);
+            out += join(part[2:], "");
+        };
+    };
+    return out;
 };

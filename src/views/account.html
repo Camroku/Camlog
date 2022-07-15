@@ -1,0 +1,66 @@
+<html lang="en">
+
+<head>
+    $header
+    <title>Account - $config.author's blog</title>
+</head>
+
+<body>
+    <div class="content">
+        <a href="/a">Back</a> | $account
+        <table style="border: none;">
+            <tr>
+                <td style="border: none;"><img src="$pfp" width="90px" /></td>
+                <td style="border: none;">
+                    <h1>$realname</h1>
+                </td>
+            </tr>
+        </table>
+        <form action="" method="post" id="accountform">
+        </form>
+        <table style="width: 100%;" class="normaltable">
+            <tbody>
+                <tr>
+                    <td style="border: none;">
+                        <label for="realname">Real name:</label>
+                    </td>
+                    <td style="border: none;">
+                        <input type="text" name="realname" id="realname" value="$realname" form="accountform" style="width: 100%;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: none;">
+                        <label for="pfp">Profile Photo:</label>
+                    </td>
+                    <td style="border: none;">
+                        <input type="text" name="pfp" id="pfp" value="$pfp" form="accountform" style="width: 100%;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: text-top; border: none;">
+                        <label for="pagecontent">Description:</label>
+                    </td>
+                    <td style="border: none;">
+                        <textarea name="pagecontent" id="pagecontent" rows="20" form="accountform"
+                            style="width: 100%; resize: none;">$pagecontent</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: none;">
+                        <label for="password">Password:</label>
+                    </td>
+                    <td style="border: none;">
+                        <input type="password" name="password" id="password" form="accountform" style="width: 100%;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border: none;">
+                        <input type="submit" value="Update" form="accountform"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
