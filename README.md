@@ -7,7 +7,7 @@ Server configuration requirements:
 * Rewrite all URLs to `/index.qo`
 * Serve `index.qo` as index file
 * Deny access for all `.html` files
-* Serve all `.js` and `.css` files as static files
+* Serve all `.js`, `.css` and image files as static files
 
 Other requirements:
 * Latest version of QoLang, built with `IMPORTS=sqlite3`.
@@ -32,7 +32,7 @@ server {
                 rewrite (.*) /index.qo last;
         }
 
-        location ~ \.js$|\.css$ {
+        location ~ \.js$|\.css|\.png|\.ico$ {
                 try_files $uri @notfound;
         }
 
