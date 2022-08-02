@@ -17,11 +17,18 @@ func htmlPage(page)
 func error(errorcode)
 {
     include qcf;
+    include string;
+    include file;
     qcf.new("config.qcf", &config);
     config.author = config.get("author");
-    header = format(read("views/header.html"));
+    headerf = file.open("views/header.html");
+    header = string.format(file.read(headerf));
+    file.close(headerf);
     print(%"Content-Type: text/html\nStatus: $errorcode\n\n");
-    print(format(read("views/error.html")));
+    errf = file.open("views/error.html");
+    err = string.format(file.read(headerf));
+    file.close(errf);
+    print(err);
 };
 
 func redirect(loc)
@@ -37,25 +44,28 @@ func plainText(page)
 
 func html.escape(text)
 {
-    text = replace(text, %"&", "&amp;");
-    text = replace(text, %"<", "&lt;");
-    text = replace(text, %">", "&gt;");
-    text = replace(text, %"\"", "&quot;");
-    text = replace(text, %"'", "&#39;");
+    include string;
+    text = string.replace(text, %"&", "&amp;");
+    text = string.replace(text, %"<", "&lt;");
+    text = string.replace(text, %">", "&gt;");
+    text = string.replace(text, %"\"", "&quot;");
+    text = string.replace(text, %"'", "&#39;");
     return text;
 };
 
 func url.unquote(text)
 {
-    text = split(text, "%");
+    include string;
+    include types;
+    text = string.split(text, "%");
     out = text[0];
     foreach &part in text[1:]
     {
         if (len(part) > 1)
         {
-            hex = toInt("0x" + part[0] + part[1]);
+            hex = types.toInt("0x" + part[0] + part[1]);
             out += chr(hex);
-            out += join(part[2:], "");
+            out += string.join(part[2:], "");
         };
     };
     return out;
@@ -63,16 +73,18 @@ func url.unquote(text)
 
 func url.unquote_plus(text)
 {
-    text = replace(text, %"+", " ");
-    text = split(text, "%");
+    include string;
+    include types;
+    text = string.replace(text, %"+", " ");
+    text = string.split(text, "%");
     out = text[0];
     foreach &part in text[1:]
     {
         if (len(part) > 1)
         {
-            hex = toInt("0x" + part[0] + part[1]);
+            hex = types.toInt("0x" + part[0] + part[1]);
             out += chr(hex);
-            out += join(part[2:], "");
+            out += string.join(part[2:], "");
         };
     };
     return out;

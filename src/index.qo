@@ -5,6 +5,9 @@ include lib.sort;
 include lib.db;
 include qcf;
 include qo;
+include string;
+include file;
+include types;
 
 qcf.new("config.qcf", &config);
 
@@ -13,7 +16,7 @@ config.url = config.get("link");
 config.desc = config.get("description");
 author = config.author;
 
-route = deleteAfter(qo.env("REQUEST_URI"), '?');
+route = string.deleteAfter(qo.env("REQUEST_URI"), '?');
 reqtype = qo.env("REQUEST_METHOD");
 ip = qo.env("REMOTE_ADDR");
 
@@ -21,13 +24,15 @@ if (reqtype == "POST") {
     unparsedpostdata = input();
     unparsedpostdata = wutils.url.unquote_plus(unparsedpostdata);
     postdata = [];
-    foreach &data in split(unparsedpostdata, '&')
+    foreach &data in string.split(unparsedpostdata, '&')
     {
-        postdata += [split(data, '=')];
+        postdata += [string.split(data, '=')];
     };
 };
 
-header = format(read("views/header.html"));
+headerf = file.open("views/header.html", "r");
+header = string.format(file.read(headerf));
+file.close(headerf);
 
 func deleteBlank(list)
 {
@@ -55,30 +60,32 @@ if (route == "/")
 {
     pagelist = [];
     datelist = [];
-    allfiles = filelist("./pages");
+    allfiles = file.list("./pages");
     listables = [];
     foreach &page in allfiles
     {
-        if (endsWith(page, ".qm")) {
+        if (string.endsWith(page, ".qm")) {
             listables += [page];
         };
     };
     foreach &page in listables
     {
-        pagecontent = read("pages/" + page);
-        splitted = split(pagecontent, %"\n-----\n");
-        metadata = split(splitted[0], %"\n");
+        pagef = file.open("pages/" + page, "r");
+        pagecontent = file.read(pagef);
+        file.close(pagef);
+        splitted = string.split(pagecontent, %"\n-----\n");
+        metadata = string.split(splitted[0], %"\n");
         foreach &data in metadata
         {
-            datasplitted = split(data, " ");
+            datasplitted = string.split(data, " ");
             datasplitted = deleteBlank(datasplitted);
             if (datasplitted[0] == "title")
             {
-                pagename = join(datasplitted[1:], " ");
+                pagename = string.join(datasplitted[1:], " ");
             }
             else if (datasplitted[0] == "date")
             {
-                date = toInt(datasplitted[1]);
+                date = types.toInt(datasplitted[1]);
             };
         };
         pagelist += [[page, pagename]];
@@ -92,46 +99,50 @@ if (route == "/")
     i = 0;
     foreach &page in pages
     {
-        pagelink = replace(page[0], ".qm", "");
+        pagelink = string.replace(page[0], ".qm", "");
         pagename = page[1];
         pagedate = formatdate(datelist[i], '%Y-%m-%d %H:%M:%S');
         pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
         i += 1;
     };
-    content = format(read("views/index.html"));
+    pagef = file.open("views/index.html", "r");
+    content = string.format(file.read(pagef));
+    file.close(pagef);
     wutils.htmlPage(content);
 }
 else
 {
-    splitted = split(route, "/");
+    splitted = string.split(route, "/");
     splitted = deleteBlank(splitted);
     if (splitted[0] == "p") {
         if (len(splitted) == 1) {
             wutils.redirect("/");
         } else {
-            pagecontent = read("pages/" + splitted[1] + ".qm");
+            pagef = file.open("pages/" + splitted[1] + ".qm", "r");
+            pagecontent = file.read(pagef);
+            file.close(pagef);
             if (pagecontent == None) {
                 wutils.error("404 Not Found");
             } else {
-                splitted = split(pagecontent, %"\n-----\n");
-                pagecontent = qomar.compile.html(join(splitted[1:], %"\n-----\n"));
-                metadata = split(splitted[0], %"\n");
+                splitted = string.split(pagecontent, %"\n-----\n");
+                pagecontent = qomar.compile.html(string.join(splitted[1:], %"\n-----\n"));
+                metadata = string.split(splitted[0], %"\n");
                 taglist = [];
                 foreach &data in metadata
                 {
-                    datasplitted = split(data, " ");
+                    datasplitted = string.split(data, " ");
                     datasplitted = deleteBlank(datasplitted);
                     if (datasplitted[0] == "title")
                     {
-                        page = join(datasplitted[1:], " ");
+                        page = string.join(datasplitted[1:], " ");
                     }
                     else if (datasplitted[0] == "date")
                     {
-                        date = formatdate(toInt(datasplitted[1]), '%Y-%m-%d %H:%M:%S');
+                        date = formatdate(types.toInt(datasplitted[1]), '%Y-%m-%d %H:%M:%S');
                     }
                     else if (datasplitted[0] == "author")
                     {
-                        author = join(datasplitted[1:], " ");
+                        author = string.join(datasplitted[1:], " ");
                     }
                     else if (datasplitted[0] == "tag")
                     {
@@ -139,80 +150,88 @@ else
                         taglist += [%"<a href=\"/t/$tag\">#$tag</a>"];
                     };
                 };
-                taglist = join(taglist, ", ");
-                content = format(read("views/page.html"));
+                taglist = string.join(taglist, ", ");
+                pagef = file.open("views/page.html", "r");
+                content = string.format(file.read(pagef));
+                file.close(pagef);
                 wutils.htmlPage(content);
             };
         };
     } else if (splitted[0] == "a") {
         if (len(splitted) == 1) {
             userlist = "";
-            foreach &user in filelist("./authors")
+            foreach &user in file.list("./authors")
             {
-                username = replace(user, ".qm", "");
+                username = string.replace(user, ".qm", "");
                 userlist += %"<h3><a href=\"/a/$username\">$username</a></h3>";
             };
-            content = format(read("views/authors.html"));
+            pagef = file.open("views/authors.html", "r");
+            content = string.format(file.read(pagef));
+            file.close(pagef);
             wutils.htmlPage(content);
         } else {
-            pagecontent = read("authors/" + splitted[1] + ".qm");
+            pagef = file.open("authors/" + splitted[1] + ".qm", "r");
+            pagecontent = file.read(pagef);
+            file.close(pagef);
             if (pagecontent == None) {
                 wutils.error("404 Not Found");
             } else {
                 username = splitted[1];
-                splitted = split(pagecontent, %"\n-----\n");
-                pagecontent = qomar.compile.html(join(splitted[1:], %"\n-----\n"));
-                metadata = split(splitted[0], %"\n");
+                splitted = string.split(pagecontent, %"\n-----\n");
+                pagecontent = qomar.compile.html(string.join(splitted[1:], %"\n-----\n"));
+                metadata = string.split(splitted[0], %"\n");
                 realname = "Unknown";
                 pfp = "";
                 metadata = deleteBlank(metadata);
                 if (len(metadata) > 0) {
                     foreach &data in metadata
                     {
-                        datasplitted = split(data, " ");
+                        datasplitted = string.split(data, " ");
                         datasplitted = deleteBlank(datasplitted);
                         if (datasplitted[0] == "realname")
                         {
-                            realname = join(datasplitted[1:], " ");
+                            realname = string.join(datasplitted[1:], " ");
                         }
                         else if (datasplitted[0] == "pfp")
                         {
-                            pfp = join(datasplitted[1:], " ");
+                            pfp = string.join(datasplitted[1:], " ");
                         };
                     };
                 };
                 if (pfp == "")
                 {
-                    pfp = "https://ui-avatars.com/api/?name=" + replace(realname, " ", "+");
+                    pfp = "https://ui-avatars.com/api/?name=" + string.replace(realname, " ", "+");
                 };
                 pagelist = [];
                 datelist = [];
-                foreach &page in filelist("./pages")
+                foreach &page in file.list("./pages")
                 {
-                    pagcontent = read("pages/" + page);
-                    splitted = split(pagcontent, %"\n-----\n");
-                    metadata = split(splitted[0], %"\n");
+                    pagef = file.open("pages/" + page, "r");
+                    pagcontent = file.read(pagef);
+                    file.close(pagef);
+                    splitted = string.split(pagcontent, %"\n-----\n");
+                    metadata = string.split(splitted[0], %"\n");
                     foundAuthor = False;
                     isAuthor = False;
                     foreach &data in metadata
                     {
-                        datasplitted = split(data, " ");
+                        datasplitted = string.split(data, " ");
                         datasplitted = deleteBlank(datasplitted);
                         if (datasplitted[0] == "author")
                         {
                             foundAuthor = True;
-                            if (join(datasplitted[1:], " ") == username)
+                            if (string.join(datasplitted[1:], " ") == username)
                             {
                                 isAuthor = True;
                             };
                         }
                         else if (datasplitted[0] == "date")
                         {
-                            date = toInt(datasplitted[1]);
+                            date = types.toInt(datasplitted[1]);
                         }
                         else if (datasplitted[0] == "title")
                         {
-                            title = join(datasplitted[1:], " ");
+                            title = string.join(datasplitted[1:], " ");
                         };
                     };
                     if (foundAuthor == False) {
@@ -231,13 +250,15 @@ else
                 i = 0;
                 foreach &page in pages
                 {
-                    pagelink = replace(page[0], ".qm", "");
+                    pagelink = string.replace(page[0], ".qm", "");
                     pagename = page[1];
                     pagedate = formatdate(datelist[i], '%Y-%m-%d %H:%M:%S');
                     pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
                     i += 1;
                 };
-                content = format(read("views/author.html"));
+                pagef = file.open("views/author.html", "r");
+                content = string.format(file.read(pagef));
+                file.close(pagef);
                 wutils.htmlPage(content);
             };
         };
@@ -248,32 +269,34 @@ else
             tag = splitted[1];
             pagelist = [];
             datelist = [];
-            foreach &page in filelist("./pages")
+            foreach &page in file.list("./pages")
             {
-                pagcontent = read("pages/" + page);
-                splitted = split(pagcontent, %"\n-----\n");
-                metadata = split(splitted[0], %"\n");
+                pagef = file.open("pages/" + page, "r");
+                pagcontent = file.read(pagef);
+                file.close(pagef);
+                splitted = string.split(pagcontent, %"\n-----\n");
+                metadata = string.split(splitted[0], %"\n");
                 foundTag = False;
                 isTag = False;
                 foreach &data in metadata
                 {
-                    datasplitted = split(data, " ");
+                    datasplitted = string.split(data, " ");
                     datasplitted = deleteBlank(datasplitted);
                     if (datasplitted[0] == "tag")
                     {
                         foundTag = True;
-                        if (join(datasplitted[1:], " ") == tag)
+                        if (string.join(datasplitted[1:], " ") == tag)
                         {
                             isTag = True;
                         };
                     }
                     else if (datasplitted[0] == "date")
                     {
-                        date = toInt(datasplitted[1]);
+                        date = types.toInt(datasplitted[1]);
                     }
                     else if (datasplitted[0] == "title")
                     {
-                        title = join(datasplitted[1:], " ");
+                        title = string.join(datasplitted[1:], " ");
                     };
                 };
                 if (foundTag == False) {
@@ -292,13 +315,15 @@ else
             i = 0;
             foreach &page in pages
             {
-                pagelink = replace(page[0], ".qm", "");
+                pagelink = string.replace(page[0], ".qm", "");
                 pagename = page[1];
                 pagedate = formatdate(datelist[i], '%Y-%m-%d %H:%M:%S');
                 pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
                 i += 1;
             };
-            content = format(read("views/tag.html"));
+            pagef = file.open("views/tag.html", "r");
+            content = string.format(file.read(pagef));
+            file.close(pagef);
             wutils.htmlPage(content);
         };
     } else if (splitted[0] == "login") {
@@ -307,7 +332,9 @@ else
             cs = db.fetchone();
             if (cs == None)
             {
-                content = format(read("views/login.html"));
+                pagef = file.open("views/login.html", "r");
+                content = string.format(file.read(pagef));
+                file.close(pagef);
                 wutils.htmlPage(content);
             } else {
                 wutils.redirect("/");
@@ -362,7 +389,9 @@ else
             cs = db.fetchone();
             if (cs == None)
             {
-                content = format(read("views/register.html"));
+                pagef = file.open("views/register.html", "r");
+                content = string.format(file.read(pagef));
+                file.close(pagef);
                 wutils.htmlPage(content);
             } else {
                 wutils.redirect("/");
@@ -395,7 +424,9 @@ else
                     db.exec(%"INSERT INTO users (nickname, password) VALUES ('$username', '$encryptedpass')");
                     db.exec(%"INSERT INTO sessions (ip, nickname) VALUES ('$ip', '$username')");
                     db.commit();
-                    writef(%"./authors/" + username +".qm", %"\n-----\nNo description.");
+                    pagef = open(%"./authors/" + username +".qm", "w");
+                    file.write(pagef, %"\n-----\nNo description.");
+                    file.close(pagef);
                     wutils.redirect("/");
                 }
                 else if (pass[0] == db.hash(password))
@@ -414,65 +445,68 @@ else
             {
                 wutils.error("401 Unauthorized");
             } else {
-                print(cs[0]);
-                pagecontent = read("authors/" + cs[0] + ".qm");
+                pagef = file.open("authors/" + cs[0] + ".qm", "r");
+                pagecontent = string.format(file.read(pagef));
+                file.close(pagef);
                 if (pagecontent == None) {
                     wutils.error("404 Not Found");
                 } else {
                     username = cs[0];
-                    splitted = split(pagecontent, %"\n-----\n");
-                    pagecontent = wutils.html.escape(join(splitted[1:], %"\n-----\n"));
-                    metadata = split(splitted[0], %"\n");
+                    splitted = string.split(pagecontent, %"\n-----\n");
+                    pagecontent = wutils.html.escape(string.join(splitted[1:], %"\n-----\n"));
+                    metadata = string.split(splitted[0], %"\n");
                     realname = "Unknown";
                     pfp = "";
                     metadata = deleteBlank(metadata);
                     if (len(metadata) > 0) {
                         foreach &data in metadata
                         {
-                            datasplitted = split(data, " ");
+                            datasplitted = string.split(data, " ");
                             datasplitted = deleteBlank(datasplitted);
                             if (datasplitted[0] == "realname")
                             {
-                                realname = join(datasplitted[1:], " ");
+                                realname = string.join(datasplitted[1:], " ");
                             }
                             else if (datasplitted[0] == "pfp")
                             {
-                                pfp = join(datasplitted[1:], " ");
+                                pfp = string.join(datasplitted[1:], " ");
                             };
                         };
                     };
                     if (pfp == "")
                     {
-                        pfp = "https://ui-avatars.com/api/?name=" + replace(realname, " ", "+");
+                        pfp = "https://ui-avatars.com/api/?name=" + string.replace(realname, " ", "+");
                     };
                     pagelist = [];
                     datelist = [];
-                    foreach &page in filelist("./pages")
+                    foreach &page in file.list("./pages")
                     {
-                        pagcontent = read("pages/" + page);
-                        splitted = split(pagcontent, %"\n-----\n");
-                        metadata = split(splitted[0], %"\n");
+                        pagef = file.open("pages/" + page, "r");
+                        pagcontent = string.format(file.read(pagef));
+                        file.close(pagef);
+                        splitted = string.split(pagcontent, %"\n-----\n");
+                        metadata = string.split(splitted[0], %"\n");
                         foundAuthor = False;
                         isAuthor = False;
                         foreach &data in metadata
                         {
-                            datasplitted = split(data, " ");
+                            datasplitted = string.split(data, " ");
                             datasplitted = deleteBlank(datasplitted);
                             if (datasplitted[0] == "author")
                             {
                                 foundAuthor = True;
-                                if (join(datasplitted[1:], " ") == username)
+                                if (string.join(datasplitted[1:], " ") == username)
                                 {
                                     isAuthor = True;
                                 };
                             }
                             else if (datasplitted[0] == "date")
                             {
-                                date = toInt(datasplitted[1]);
+                                date = types.toInt(datasplitted[1]);
                             }
                             else if (datasplitted[0] == "title")
                             {
-                                title = join(datasplitted[1:], " ");
+                                title = string.join(datasplitted[1:], " ");
                             };
                         };
                         if (foundAuthor == False) {
@@ -491,13 +525,15 @@ else
                     i = 0;
                     foreach &page in pages
                     {
-                        pagelink = replace(page[0], ".qm", "");
+                        pagelink = string.replace(page[0], ".qm", "");
                         pagename = page[1];
                         pagedate = formatdate(datelist[i], '%Y-%m-%d %H:%M:%S');
                         pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
                         i += 1;
                     };
-                    content = format(read("views/account.html"));
+                    pagef = file.open("views/account.html", "r");
+                    content = string.format(file.read(pagef));
+                    file.close(pagef);
                     wutils.htmlPage(content);
                 };
             };
@@ -514,19 +550,19 @@ else
                 {
                     if (data[0] == "realname")
                     {
-                        realname = join(data[1:], " ");
+                        realname = string.join(data[1:], " ");
                     }
                     else if (data[0] == "password")
                     {
-                        password = join(data[1:], " ");
+                        password = string.join(data[1:], " ");
                     }
                     else if (data[0] == "pfp")
                     {
-                        pfp = join(data[1:], " ");
+                        pfp = string.join(data[1:], " ");
                     }
                     else if (data[0] == "pagecontent")
                     {
-                        pagecontent = join(data[1:], " ");
+                        pagecontent = string.join(data[1:], " ");
                     };
                 };
                 if (password == "")
@@ -574,43 +610,49 @@ else
             if (splitted[1] == "authors"){
                 if (len(splitted) == 2) {
                     userlist = [];
-                    foreach &user in filelist("./authors")
+                    foreach &user in file.list("./authors")
                     {
-                        userlist += [replace(user, ".qm", "")];
+                        userlist += [string.replace(user, ".qm", "")];
                     };
-                    userlist = join(userlist, %"\n");
+                    userlist = string.join(userlist, %"\n");
                     wutils.plainText(userlist);
                 } else if (len(splitted) == 3){
-                    pagecontent = read("authors/" + splitted[2] + ".qm");
-                    splitted = split(pagecontent, %"\n-----\n");
+                    pagef = file.open("authors/" + splitted[2] + ".qm", "r");
+                    pagecontent = string.format(file.read(pagef));
+                    file.close(pagef);
+                    splitted = string.split(pagecontent, %"\n-----\n");
                     wutils.plainText(splitted[0]);
                 } else if (len(splitted) == 4){
-                    pagecontent = read("authors/" + splitted[2] + ".qm");
+                    pagef = file.open("authors/" + splitted[2] + ".qm", "r");
+                    pagecontent = file.read(pagef);
+                    file.close(pagef);
                     toget = splitted[3];
                     authortoget = splitted[2];
-                    splitted = split(pagecontent, %"\n-----\n");
+                    splitted = string.split(pagecontent, %"\n-----\n");
                     if (toget == "description") {
                         wutils.plainText(splitted[1]);
                     } else if (toget == "htmldescription") {
                         wutils.plainText(qomar.compile.html(splitted[1]));
                     } else if (toget == "pages") {
                         pagelist = [];
-                        foreach &page in filelist("./pages")
+                        foreach &page in file.list("./pages")
                         {
-                            pagecontent = read("pages/" + page);
-                            splitted = split(pagecontent, %"\n-----\n");
-                            metadata = split(splitted[0], %"\n");
+                            pagef = file.open("pages/" + page, "r");
+                            pagecontent = file.read(pagef);
+                            file.close(pagef);
+                            splitted = string.split(pagecontent, %"\n-----\n");
+                            metadata = string.split(splitted[0], %"\n");
                             foundAuthor = False;
                             foreach &data in metadata
                             {
-                                datasplitted = split(data, " ");
+                                datasplitted = string.split(data, " ");
                                 datasplitted = deleteBlank(datasplitted);
                                 if (datasplitted[0] == "author")
                                 {
                                     foundAuthor = True;
-                                    if (join(datasplitted[1:], " ") == authortoget)
+                                    if (string.join(datasplitted[1:], " ") == authortoget)
                                     {
-                                        pagelist += [replace(page, ".qm", "")];
+                                        pagelist += [string.replace(page, ".qm", "")];
                                     };
                                 };
                             };
@@ -618,21 +660,21 @@ else
                             {
                                 if (config.author == authortoget)
                                 {
-                                    pagelist += [replace(page, ".qm", "")];
+                                    pagelist += [string.replace(page, ".qm", "")];
                                 };
                             };
                         };
-                        wutils.plainText(join(pagelist, %"\n"));
+                        wutils.plainText(string.join(pagelist, %"\n"));
                     } else {
                         retlist = [];
-                        arglist = split(splitted[0], %"\n");
+                        arglist = string.split(splitted[0], %"\n");
                         foreach &arg in arglist
                         {
-                            argsplitted = split(arg, " ");
+                            argsplitted = string.split(arg, " ");
                             argsplitted = deleteBlank(argsplitted);
                             if (argsplitted[0] == toget)
                             {
-                                retlist += [join(argsplitted[1:], " ")];
+                                retlist += [string.join(argsplitted[1:], " ")];
                             };
                         };
                         wutils.plainText(join(retlist, %"\n"));
@@ -642,37 +684,39 @@ else
             else if (splitted[1] == "pages"){
                 if (len(splitted) == 2) {
                     pagelist = [];
-                    foreach &page in filelist("./pages")
+                    foreach &page in file.list("./pages")
                     {
-                        pagelist += [replace(page, ".qm", "")];
+                        pagelist += [string.replace(page, ".qm", "")];
                     };
-                    pagelist = join(pagelist, %"\n");
+                    pagelist = string.join(pagelist, %"\n");
                     wutils.plainText(pagelist);
                 } else if (len(splitted) == 3){
-                    pagecontent = read("pages/" + splitted[2] + ".qm");
-                    splitted = split(pagecontent, %"\n-----\n");
+                    pagecontent = string.read("pages/" + splitted[2] + ".qm");
+                    splitted = string.split(pagecontent, %"\n-----\n");
                     wutils.plainText(splitted[0]);
                 } else if (len(splitted) == 4){
-                    pagecontent = read("pages/" + splitted[2] + ".qm");
+                    pagef = file.open("pages/" + splitted[2] + ".qm", "r");
+                    pagecontent = file.read(pagef);
+                    file.close(pagef);
                     toget = splitted[3];
-                    splitted = split(pagecontent, %"\n-----\n");
+                    splitted = string.split(pagecontent, %"\n-----\n");
                     if (toget == "content") {
                         wutils.plainText(splitted[1]);
                     } else if (toget == "htmlcontent") {
                         wutils.plainText(qomar.compile.html(splitted[1]));
                     } else {
                         retlist = [];
-                        arglist = split(splitted[0], %"\n");
+                        arglist = string.split(splitted[0], %"\n");
                         foreach &arg in arglist
                         {
-                            argsplitted = split(arg, " ");
+                            argsplitted = string.split(arg, " ");
                             argsplitted = deleteBlank(argsplitted);
                             if (argsplitted[0] == toget)
                             {
-                                retlist += [join(argsplitted[1:], " ")];
+                                retlist += [string.join(argsplitted[1:], " ")];
                             };
                         };
-                        out = join(retlist, %"\n");
+                        out = string.join(retlist, %"\n");
                         if (out == "" && toget == "author") {
                             out = config.author;
                         } else if (out == ""){
@@ -685,25 +729,27 @@ else
                 if (len(splitted) == 3){
                     tagtoget = splitted[2];
                     pagelist = [];
-                    foreach &page in filelist("./pages")
+                    foreach &page in file.list("./pages")
                     {
-                        pagecontent = read("pages/" + page);
-                        splitted = split(pagecontent, %"\n-----\n");
-                        metadata = split(splitted[0], %"\n");
+                        pagef = file.open("pages/" + page, "r");
+                        pagecontent = file.read(pagef);
+                        file.close(pagef);
+                        splitted = string.split(pagecontent, %"\n-----\n");
+                        metadata = string.split(splitted[0], %"\n");
                         foreach &data in metadata
                         {
-                            datasplitted = split(data, " ");
+                            datasplitted = string.split(data, " ");
                             datasplitted = deleteBlank(datasplitted);
                             if (datasplitted[0] == "tag")
                             {
                                 if (datasplitted[1] == tagtoget)
                                 {
-                                    pagelist += [replace(page, ".qm", "")];
+                                    pagelist += [string.replace(page, ".qm", "")];
                                 };
                             };
                         };
                     };
-                    wutils.plainText(join(pagelist, %"\n"));
+                    wutils.plainText(string.join(pagelist, %"\n"));
                 };
             };
         };
@@ -714,28 +760,30 @@ else
         print(%"<link>$config.url</link>");
         print(%"<description>$config.desc</description>");
         print(%"<language>en-us</language>");
-        foreach &page in filelist("./pages")
+        foreach &page in file.list("./pages")
         {
-            title = replace(replace(page, ".qm", ""), "_", " ");
-            pagecontent = read("pages/" + page);
-            splitted = split(pagecontent, %"\n-----\n");
-            metadata = split(splitted[0], %"\n");
-            pagecont = join(splitted[1:], "\n-----\n");
+            title = string.replace(string.replace(page, ".qm", ""), "_", " ");
+            pagef = file.open("pages/" + page, "r");
+            pagecontent = file.read(pagef);
+            file.close(pagef);
+            splitted = string.split(pagecontent, %"\n-----\n");
+            metadata = string.split(splitted[0], %"\n");
+            pagecont = string.join(splitted[1:], "\n-----\n");
             foreach &data in metadata
             {
-                datasplitted = split(data, " ");
+                datasplitted = string.split(data, " ");
                 datasplitted = deleteBlank(datasplitted);
                 if (datasplitted[0] == "date")
                 {
-                    date = formatdate(toInt(datasplitted[1]), "%a, %d %B %Y %T %z");
+                    date = formatdate(types.toInt(datasplitted[1]), "%a, %d %B %Y %T %z");
                 } else if (datasplitted[0] == "title")
                 {
-                    title = join(datasplitted[1:], " ");
+                    title = string.join(datasplitted[1:], " ");
                 };
             };
-            pagedesc = split(pagecont, %"\n");
+            pagedesc = string.split(pagecont, %"\n");
             pagedesc = pagedesc[0];
-            page = replace(page, ".qm", "");
+            page = string.replace(page, ".qm", "");
             print(%"<item>");
             print(%"<title>$title</title>");
             print(%"<link>$config.url/p/$page</link>");
