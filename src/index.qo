@@ -55,7 +55,15 @@ if (route == "/")
 {
     pagelist = [];
     datelist = [];
-    foreach &page in filelist("./pages")
+    allfiles = filelist("./pages");
+    listables = [];
+    foreach &page in allfiles
+    {
+        if (endsWith(page, ".qm")) {
+            listables += [page];
+        };
+    };
+    foreach &page in listables
     {
         pagecontent = read("pages/" + page);
         splitted = split(pagecontent, %"\n-----\n");
