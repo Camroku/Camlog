@@ -160,7 +160,14 @@ else
     } else if (splitted[0] == "a") {
         if (len(splitted) == 1) {
             userlist = "";
+            listables = [];
             foreach &user in file.list("./authors")
+            {
+                if (string.endsWith(page, ".qm")) {
+                    listables += [page];
+                };
+            };
+            foreach &user in listables
             {
                 username = string.replace(user, ".qm", "");
                 userlist += %"<h3><a href=\"/a/$username\">$username</a></h3>";
@@ -204,7 +211,14 @@ else
                 };
                 pagelist = [];
                 datelist = [];
+                listables = [];
                 foreach &page in file.list("./pages")
+                {
+                    if (string.endsWith(page, ".qm")) {
+                        listables += [page];
+                    };
+                };
+                foreach &page in listables
                 {
                     pagef = file.open("pages/" + page, "r");
                     pagcontent = file.read(pagef);
@@ -269,7 +283,14 @@ else
             tag = splitted[1];
             pagelist = [];
             datelist = [];
+            listables = [];
             foreach &page in file.list("./pages")
+            {
+                if (string.endsWith(page, ".qm")) {
+                    listables += [page];
+                };
+            };
+            foreach &page in listables
             {
                 pagef = file.open("pages/" + page, "r");
                 pagcontent = file.read(pagef);
@@ -479,7 +500,14 @@ else
                     };
                     pagelist = [];
                     datelist = [];
+                    listables = [];
                     foreach &page in file.list("./pages")
+                    {
+                        if (string.endsWith(page, ".qm")) {
+                            listables += [page];
+                        };
+                    };
+                    foreach &page in listables
                     {
                         pagef = file.open("pages/" + page, "r");
                         pagcontent = string.format(file.read(pagef));
@@ -603,6 +631,8 @@ else
             db.commit();
         };
         wutils.redirect("/");
+    } else if (splitted[0] == "edit") {
+        
     } else if (splitted[0] == "api") {
         if (len(splitted) == 1) {
             wutils.redirect("/");
@@ -610,7 +640,14 @@ else
             if (splitted[1] == "authors"){
                 if (len(splitted) == 2) {
                     userlist = [];
+                    listables = [];
                     foreach &user in file.list("./authors")
+                    {
+                        if (string.endsWith(page, ".qm")) {
+                            listables += [page];
+                        };
+                    };
+                    foreach &user in listables
                     {
                         userlist += [string.replace(user, ".qm", "")];
                     };
@@ -635,7 +672,14 @@ else
                         wutils.plainText(qomar.compile.html(splitted[1]));
                     } else if (toget == "pages") {
                         pagelist = [];
+                        listables = [];
                         foreach &page in file.list("./pages")
+                        {
+                            if (string.endsWith(page, ".qm")) {
+                                listables += [page];
+                            };
+                        };
+                        foreach &page in listables
                         {
                             pagef = file.open("pages/" + page, "r");
                             pagecontent = file.read(pagef);
@@ -684,7 +728,14 @@ else
             else if (splitted[1] == "pages"){
                 if (len(splitted) == 2) {
                     pagelist = [];
+                    listables = [];
                     foreach &page in file.list("./pages")
+                    {
+                        if (string.endsWith(page, ".qm")) {
+                            listables += [page];
+                        };
+                    };
+                    foreach &page in listables
                     {
                         pagelist += [string.replace(page, ".qm", "")];
                     };
@@ -729,7 +780,14 @@ else
                 if (len(splitted) == 3){
                     tagtoget = splitted[2];
                     pagelist = [];
+                    listables = [];
                     foreach &page in file.list("./pages")
+                    {
+                        if (string.endsWith(page, ".qm")) {
+                            listables += [page];
+                        };
+                    };
+                    foreach &page in listables
                     {
                         pagef = file.open("pages/" + page, "r");
                         pagecontent = file.read(pagef);
@@ -760,7 +818,14 @@ else
         print(%"<link>$config.url</link>");
         print(%"<description>$config.desc</description>");
         print(%"<language>en-us</language>");
+        listables = [];
         foreach &page in file.list("./pages")
+        {
+            if (string.endsWith(page, ".qm")) {
+                listables += [page];
+            };
+        };
+        foreach &page in listables
         {
             title = string.replace(string.replace(page, ".qm", ""), "_", " ");
             pagef = file.open("pages/" + page, "r");
