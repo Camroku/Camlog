@@ -641,6 +641,24 @@ else if (splitted[0] == "p") {
             };
         };
 
+        if (password == "") {
+            wutils.error("400 Bad Request");
+            exit(0);
+        }
+        else {
+            username = cs[0];
+            db.exec(%"SELECT password FROM users WHERE nickname = '$username'");
+            pass = db.fetchone();
+            if (pass == None) {
+                wutils.error("401 Unauthorized");
+                exit(0);
+            }
+            else if (pass[0] != db.hash(password)) {
+                wutils.error("401 Unauthorized");
+                exit(0);
+            };
+        };
+
         if (file.isfile("pages/" + page + ".qm")) {
             pagef = file.open("pages/" + page + ".qm", "r");
             content = string.split(file.read(pagef), %"\n-----\n");
