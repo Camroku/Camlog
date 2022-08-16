@@ -1,0 +1,56 @@
+<html lang="en">
+
+<head>
+    $header
+    <title>Edit $page - $config.author's blog</title>
+</head>
+
+<body>
+    <div class="content">
+        <a href="/a">Back</a> | $account
+        <form action="" method="post" id="accountform">
+        </form>
+        <table style="width: 100%;" class="normaltable">
+            <tbody>
+                <tr>
+                    <td style="border: none;">
+                        <label for="title">Title:</label>
+                    </td>
+                    <td style="border: none;">
+                        <input type="text" name="title" id="title" value="$title" form="accountform" style="width: 100%;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: none;">
+                        <label for="tags">Tags (comma-seperated):</label>
+                    </td>
+                    <td style="border: none;">
+                        <input type="text" name="tags" id="tags" value="$tags" form="accountform" style="width: 100%;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border: none;">
+                        <label for="pagecontent">Page content:</label>
+                        <textarea name="pagecontent" id="pagecontent" rows="20" form="accountform"
+                            style="width: 100%; resize: none;">$content</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border: none;">
+                        <label for="password">Password:</label>
+                    </td>
+                    <td style="border: none;">
+                        <input type="password" name="password" id="password" form="accountform" style="width: 100%;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border: none;">
+                        <input type="submit" value="Update" form="accountform"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

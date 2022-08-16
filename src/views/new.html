@@ -1,0 +1,61 @@
+<html lang="en">
+
+<head>
+    $header
+    <title>Create new page - $config.author's blog</title>
+</head>
+
+<body>
+    <div class="content">
+        <a href="/">Back</a> | $account
+        <h1>Create a new page</h1>
+        <form id="accountform">
+        </form>
+        <table style="width: 100%;" class="normaltable">
+            <tbody>
+                <tr>
+                    <td style="border: none;">
+                        <label for="uqname">Unique name (see <a href="/help/uqnames">Unique Names</a>):</label>
+                    </td>
+                    <td style="border: none;">
+                        <input type="text" id="uqname" form="accountform" style="width: 100%;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border: none;">
+                        <button onclick="editPage();">Start editing!</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function editPage() {
+            if (document.getElementById("uqname").value == "") {
+                alert("You must enter a unique name!");
+                return;
+            }
+            if (document.getElementById('uqname').value.includes("/")) {
+                alert("The unique name cannot contain a slash!");
+                return;
+            }
+            location.pathname = '/edit/' + document.getElementById('uqname').value;
+        }
+        function processForm(e) {
+            if (e.preventDefault) e.preventDefault();
+
+            editPage();
+
+            return false;
+        }
+
+        var form = document.getElementById('accountform');
+        if (form.attachEvent) {
+            form.attachEvent("submit", processForm);
+        } else {
+            form.addEventListener("submit", processForm);
+        }
+    </script>
+</body>
+
+</html>
