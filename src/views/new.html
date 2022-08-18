@@ -1,61 +1,68 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    $header
-    <title>Create new page - $config.author's blog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Create a new page - $config.author's blog</title>
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/styles.min.css">
 </head>
 
-<body>
-    <div class="content">
-        <a href="/">Back</a> | $account
-        <h1>Create a new page</h1>
-        <form id="accountform">
-        </form>
-        <table style="width: 100%;" class="normaltable">
-            <tbody>
-                <tr>
-                    <td style="border: none;">
-                        <label for="uqname">Unique name (see <a href="/help/uqnames">Unique Names</a>):</label>
-                    </td>
-                    <td style="border: none;">
-                        <input type="text" id="uqname" form="accountform" style="width: 100%;" />
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="border: none;">
-                        <button onclick="editPage();">Start editing!</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+<body class="text-white bg-dark"><nav class="navbar navbar-dark navbar-expand-md bg-primary py-3">
+    <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span>$config.author&#39;s blog</span></a><button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navcol-5"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        <div id="navcol-5" class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/">Back</a></li>$account
+            </ul>
+        </div>
     </div>
-    <script>
-        function editPage() {
-            if (document.getElementById("uqname").value == "") {
-                alert("You must enter a unique name!");
-                return;
-            }
-            if (document.getElementById('uqname').value.includes("/")) {
-                alert("The unique name cannot contain a slash!");
-                return;
-            }
-            location.pathname = '/edit/' + document.getElementById('uqname').value;
-        }
-        function processForm(e) {
-            if (e.preventDefault) e.preventDefault();
-
-            editPage();
-
-            return false;
-        }
-
-        var form = document.getElementById('accountform');
-        if (form.attachEvent) {
-            form.attachEvent("submit", processForm);
-        } else {
-            form.addEventListener("submit", processForm);
-        }
-    </script>
+</nav>
+    <div class="container text-white mt-3">
+        <div class="row d-flex justify-content-center">
+            <div class="col">
+                <h2 class="text-center">Create a new page</h2>
+                <div class="card border-0 mb-5">
+                    <div class="card-body bg-dark d-flex flex-column align-items-center">
+                        <form class="text-center" id="newPageFrom" method="post"><a class="text-center link-light float-end" href="https://camroku.tech/p/camlog_unique_names" style="transform: translate(8px, 8px); line-height: 0px !important;" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-question-circle-fill" data-bs-toggle="tooltip" data-bss-tooltip="" data-bs-placement="right" title="Click to learn about unique names">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"></path>
+                                </svg></a><input class="bg-dark border-secondary form-control text-white" type="text" id="uqname" name="pfp" placeholder="Unique name">
+                            <div class="mb-3"></div>
+                            <div class="mb-3"><button class="btn btn-primary d-block w-100" type="button" onclick="editPage();">Start editing</button></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="text-center">
+        <div class="container text-muted py-4 py-lg-5">
+            <ul class="list-inline">
+                <li class="list-inline-item me-4"><a class="link-secondary" href="https://github.com/Camroku/Camlog">Camlog</a></li>
+                <li class="list-inline-item me-4"><a class="link-secondary" href="https://github.com/Arnolxu/apprentice.css">apprentice.css</a></li>
+            </ul>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="/feed"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-rss-fill text-secondary">
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2zm0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2zm.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path>
+                        </svg></a></li>
+            </ul>
+        </div>
+    </footer>
+    <div class="modal fade" role="dialog" tabindex="-1" id="errorModal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: .5em !important;">
+                <div class="modal-header bg-dark border-secondary">
+                    <h4 class="modal-title">Error!</h4><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-dark">
+                    <p id="errorContent">If you see this text, it means that this warning wasn't supposed to be here. Just close it, and&nbsp;<a href="mailto:$config.email">mail us</a>&nbsp;if anything goes wrong.</p>
+                </div>
+                <div class="modal-footer bg-dark border-secondary"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/script.min.js"></script>
 </body>
 
 </html>

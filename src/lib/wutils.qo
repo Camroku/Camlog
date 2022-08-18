@@ -26,7 +26,7 @@ func error(errorcode)
     file.close(headerf);
     print(%"Content-Type: text/html\nStatus: $errorcode\n\n");
     errf = file.open("views/error.html");
-    err = string.format(file.read(headerf));
+    err = string.format(file.read(errf));
     file.close(errf);
     print(err);
 };

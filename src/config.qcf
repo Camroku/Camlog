@@ -1,3 +1,4 @@
 author = "Arnolxu";
-link = "https://clog-test.loca.lt";
+link = "https://localhost:3000";
 description = "Arnolxu's very custom blog";
+email = "admin@camroku.tech";

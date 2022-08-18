@@ -15,6 +15,7 @@ qcf.new("config.qcf", &config);
 config.author = config.get("author");
 config.url = config.get("link");
 config.desc = config.get("description");
+config.email = config.get("email");
 author = config.author;
 
 route = string.deleteAfter(qo.env("REQUEST_URI"), '?');
@@ -30,10 +31,6 @@ if (reqtype == "POST") {
         postdata += [string.split(data, '=')];
     };
 };
-
-headerf = file.open("views/header.html", "r");
-header = string.format(file.read(headerf));
-file.close(headerf);
 
 func deleteBlank(list)
 {
@@ -51,9 +48,9 @@ func deleteBlank(list)
 db.exec(%"SELECT nickname FROM sessions WHERE ip = '$ip'");
 cs = db.fetchone();
 if (cs == None) {
-    account = %"<a href=\"/login\">Login</a> | <a href=\"/register\">Register</a>";
+    account = %"<li class=\"nav-item\"><a class=\"nav-link active\" href=\"/login\">Login</a></li> <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/register\">Register</a></li>";
 } else {
-    account = %"<a href=\"/logout\">Logout</a> | <a href=\"/account\">Account</a> | <a href=\"/edit\">Create new page</a>";
+    account = %"<li class=\"nav-item\"><a class=\"nav-link active\" href=\"/account\">My Account</a></li> <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/edit\">Create a new page</a></li> <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/logout\">Logout</a></li>";
 };
 
 splitted = string.split(route, "/");
@@ -77,18 +74,58 @@ if (len(splitted) == 0) {
         file.close(pagef);
         splitted = string.split(pagecontent, %"\n-----\n");
         metadata = string.split(splitted[0], %"\n");
+        author = config.author;
         foreach &data in metadata
         {
             datasplitted = string.split(data, " ");
             datasplitted = deleteBlank(datasplitted);
             if (datasplitted[0] == "title") {
                 pagename = string.join(datasplitted[1:], " ");
+                if (pagename == "") {
+                    pagename = "No title";
+                } else if (len(pagename) > 100) {
+                    pagename = string.join(pagename[:97], "") + "...";
+                };
             }
             else if (datasplitted[0] == "date") {
                 date = types.toInt(datasplitted[1]);
+            }
+            else if (datasplitted[0] == "author") {
+                author = datasplitted[1];
             };
         };
-        pagelist += [[page, pagename]];
+        firstline = string.split(splitted[1], %"\n");
+        firstline = firstline[0];
+        if (firstline == "") {
+            firstline = "No description";
+        } else if (len(firstline) > 100) {
+            firstline = string.join(firstline[:97], "") + "...";
+        };
+        authorf = file.open("authors/" + author + ".qm", "r");
+        authorcontent = file.read(authorf);
+        file.close(authorf);
+        splitted = string.split(authorcontent, %"\n-----\n");
+        metadata = string.split(splitted[0], %"\n");
+        authorrealname = "Unknown";
+        authorpfp = "";
+        metadata = deleteBlank(metadata);
+        if (len(metadata) > 0) {
+            foreach &data in metadata
+            {
+                datasplitted = string.split(data, " ");
+                datasplitted = deleteBlank(datasplitted);
+                if (datasplitted[0] == "realname") {
+                    authorrealname = string.join(datasplitted[1:], " ");
+                }
+                else if (datasplitted[0] == "pfp") {
+                    authorpfp = string.join(datasplitted[1:], " ");
+                };
+            };
+        };
+        if (authorpfp == "") {
+            authorpfp = "https://ui-avatars.com/api/?name=" + string.replace(authorrealname, " ", "+");
+        };
+        pagelist += [[page, pagename, firstline, author, authorrealname, authorpfp]];
         datelist += [date];
     };
     ret = sort.sortbyvalr(pagelist, datelist);
@@ -102,7 +139,11 @@ if (len(splitted) == 0) {
         pagelink = string.replace(page[0], ".qm", "");
         pagename = page[1];
         pagedate = date.format(datelist[i], '%Y-%m-%d %H:%M:%S');
-        pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
+        pagedesc = page[2];
+        author = page[3];
+        authorrealname = page[4];
+        authorpfp = page[5];
+        pagelist += %"<div class=\"col\"><div class=\"p-4\"><span class=\"badge rounded-pill bg-primary mb-2\">$pagedate</span><h4 class=\"text-break\"><a href=\"/p/$pagelink\">$pagename</a></h4><p class=\"text-break\">$pagedesc</p><div class=\"d-flex\"><img class=\"rounded-circle flex-shrink-0 me-3 fit-cover\" width=\"50\" height=\"50\" src=\"$authorpfp\"><div><p class=\"fw-bold mb-0\">$authorrealname</p><p class=\"mb-0\"><a href=\"/a/$author\" class=\"text-muted\">@$author</a></p></div></div></div></div>";
         i += 1;
     };
     pagef = file.open("views/index.html", "r");
@@ -145,8 +186,11 @@ else if (splitted[0] == "p") {
             };
             taglist = string.join(taglist, ", ");
             edithtml = "";
-            if (author == cs[0]) {
-                edithtml = %" | <a href=\"/edit/" + pagen + %"\">Edit this page</a>";
+            if (cs != None) {
+                if (author == cs[0])
+                {
+                    edithtml = %" | <a href=\"/edit/" + pagen + %"\">Edit this page</a>";
+                };
             };
             pagef = file.open("views/page.html", "r");
             content = string.format(file.read(pagef));
@@ -166,8 +210,30 @@ else if (splitted[0] == "p") {
         };
         foreach &user in listables
         {
-            username = string.replace(user, ".qm", "");
-            userlist += %"<h3><a href=\"/a/$username\">$username</a></h3>";
+            usernick = string.replace(user, ".qm", "");
+            userf = file.open("authors/" + user, "r");
+            usercontent = file.read(userf);
+            file.close(userf);
+            splitted = string.split(usercontent, %"\n-----\n");
+            metadata = string.split(splitted[0], %"\n");
+            metadata = deleteBlank(metadata);
+            username = "Unknown";
+            userpfp = "";
+            foreach &data in metadata
+            {
+                datasplitted = string.split(data, " ");
+                datasplitted = deleteBlank(datasplitted);
+                if (datasplitted[0] == "realname") {
+                    username = string.join(datasplitted[1:], " ");
+                }
+                else if (datasplitted[0] == "pfp") {
+                    userpfp = string.join(datasplitted[1:], " ");
+                };
+            };
+            if (userpfp == "") {
+                userpfp = "https://ui-avatars.com/api/?name=" + string.replace(username, " ", "+");
+            };
+            userlist += %"<div class=\"col\"><div class=\"card border-0 shadow-none bg-dark border-2 border-secondary\"><div class=\"card-body text-center d-flex flex-column align-items-center p-0\"><img class=\"rounded-circle mb-3 fit-cover mt-3\" width=\"130\" height=\"130\" src=\"$userpfp\" /><h5 class=\"fw-bold text-primary card-title mb-0\"><a href=\"/a/$usernick\"><strong>$username</strong></a></h5><p class=\"text-muted card-text mb-2\">$usernick</p></div></div></div>";
         };
         pagef = file.open("views/authors.html", "r");
         content = string.format(file.read(pagef));
@@ -175,14 +241,14 @@ else if (splitted[0] == "p") {
         wutils.htmlPage(content);
     } else {
         pagef = file.open("authors/" + splitted[1] + ".qm", "r");
-        pagecontent = file.read(pagef);
+        authordesc = file.read(pagef);
         file.close(pagef);
-        if (pagecontent == None) {
+        if (authordesc == None) {
             wutils.error("404 Not Found");
         } else {
             username = splitted[1];
-            splitted = string.split(pagecontent, %"\n-----\n");
-            pagecontent = qomar.compile.html(string.join(splitted[1:], %"\n-----\n"));
+            splitted = string.split(authordesc, %"\n-----\n");
+            authordesc = qomar.compile.html(string.join(splitted[1:], %"\n-----\n"));
             metadata = string.split(splitted[0], %"\n");
             realname = "Unknown";
             pfp = "";
@@ -205,8 +271,9 @@ else if (splitted[0] == "p") {
             };
             pagelist = [];
             datelist = [];
+            allfiles = file.list("./pages");
             listables = [];
-            foreach &page in file.list("./pages")
+            foreach &page in allfiles
             {
                 if (string.endsWith(page, ".qm")) {
                     listables += [page];
@@ -215,34 +282,39 @@ else if (splitted[0] == "p") {
             foreach &page in listables
             {
                 pagef = file.open("pages/" + page, "r");
-                pagcontent = file.read(pagef);
+                pagecontent = file.read(pagef);
                 file.close(pagef);
-                splitted = string.split(pagcontent, %"\n-----\n");
+                splitted = string.split(pagecontent, %"\n-----\n");
                 metadata = string.split(splitted[0], %"\n");
-                foundAuthor = False;
-                isAuthor = False;
+                author = config.author;
                 foreach &data in metadata
                 {
                     datasplitted = string.split(data, " ");
                     datasplitted = deleteBlank(datasplitted);
-                    if (datasplitted[0] == "author") {
-                        foundAuthor = True;
-                        if (string.join(datasplitted[1:], " ") == username) {
-                            isAuthor = True;
+                    if (datasplitted[0] == "title") {
+                        pagename = string.join(datasplitted[1:], " ");
+                        if (pagename == "") {
+                            pagename = "No title";
+                        } else if (len(pagename) > 100) {
+                            pagename = string.join(pagename[:97], "") + "...";
                         };
                     }
                     else if (datasplitted[0] == "date") {
                         date = types.toInt(datasplitted[1]);
                     }
-                    else if (datasplitted[0] == "title") {
-                        title = string.join(datasplitted[1:], " ");
+                    else if (datasplitted[0] == "author") {
+                        author = datasplitted[1];
                     };
                 };
-                if (foundAuthor == False) {
-                    isAuthor = (username == config.author);
-                };
-                if (isAuthor) {
-                    pagelist += [[page, title]];
+                if (author == username) {
+                    firstline = string.split(splitted[1], %"\n");
+                    firstline = firstline[0];
+                    if (firstline == "") {
+                        firstline = "No description";
+                    } else if (len(firstline) > 100) {
+                        firstline = string.join(firstline[:97], "") + "...";
+                    };
+                    pagelist += [[page, pagename, firstline]];
                     datelist += [date];
                 };
             };
@@ -257,7 +329,8 @@ else if (splitted[0] == "p") {
                 pagelink = string.replace(page[0], ".qm", "");
                 pagename = page[1];
                 pagedate = date.format(datelist[i], '%Y-%m-%d %H:%M:%S');
-                pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
+                pagedesc = page[2];
+                pagelist += %"<div class=\"col\"><div class=\"p-4\"><span class=\"badge rounded-pill bg-primary mb-2\">$pagedate</span><h4 class=\"text-break\"><a href=\"/p/$pagelink\">$pagename</a></h4><p class=\"text-break\">$pagedesc</p></div></div>";
                 i += 1;
             };
             pagef = file.open("views/author.html", "r");
@@ -273,8 +346,10 @@ else if (splitted[0] == "p") {
         tag = splitted[1];
         pagelist = [];
         datelist = [];
+        allfiles = file.list("./pages");
         listables = [];
-        foreach &page in file.list("./pages")
+        matchedtag = False;
+        foreach &page in allfiles
         {
             if (string.endsWith(page, ".qm")) {
                 listables += [page];
@@ -283,34 +358,68 @@ else if (splitted[0] == "p") {
         foreach &page in listables
         {
             pagef = file.open("pages/" + page, "r");
-            pagcontent = file.read(pagef);
+            pagecontent = file.read(pagef);
             file.close(pagef);
-            splitted = string.split(pagcontent, %"\n-----\n");
+            splitted = string.split(pagecontent, %"\n-----\n");
             metadata = string.split(splitted[0], %"\n");
-            foundTag = False;
-            isTag = False;
+            author = config.author;
             foreach &data in metadata
             {
                 datasplitted = string.split(data, " ");
                 datasplitted = deleteBlank(datasplitted);
-                if (datasplitted[0] == "tag") {
-                    foundTag = True;
-                    if (string.join(datasplitted[1:], " ") == tag) {
-                        isTag = True;
+                if (datasplitted[0] == "title") {
+                    pagename = string.join(datasplitted[1:], " ");
+                    if (pagename == "") {
+                        pagename = "No title";
+                    } else if (len(pagename) > 100) {
+                        pagename = string.join(pagename[:97], "") + "...";
                     };
                 }
                 else if (datasplitted[0] == "date") {
                     date = types.toInt(datasplitted[1]);
                 }
-                else if (datasplitted[0] == "title") {
-                    title = string.join(datasplitted[1:], " ");
+                else if (datasplitted[0] == "author") {
+                    author = datasplitted[1];
+                }
+                else if (datasplitted[0] == "tag") {
+                    if (datasplitted[1] == tag) {
+                        matchedtag = True;
+                    };
                 };
             };
-            if (foundTag == False) {
-                isTag = (username == config.author);
-            };
-            if (isTag) {
-                pagelist += [[page, title]];
+            if (matchedtag) {
+                firstline = string.split(splitted[1], %"\n");
+                firstline = firstline[0];
+                if (firstline == "") {
+                    firstline = "No description";
+                } else if (len(firstline) > 100) {
+                    firstline = string.join(firstline[:97], "") + "...";
+                };
+                authorf = file.open("authors/" + author + ".qm", "r");
+                authorcontent = file.read(authorf);
+                file.close(authorf);
+                splitted = string.split(authorcontent, %"\n-----\n");
+                metadata = string.split(splitted[0], %"\n");
+                authorrealname = "Unknown";
+                authorpfp = "";
+                metadata = deleteBlank(metadata);
+                if (len(metadata) > 0) {
+                    foreach &data in metadata
+                    {
+                        datasplitted = string.split(data, " ");
+                        datasplitted = deleteBlank(datasplitted);
+                        if (datasplitted[0] == "realname") {
+                            authorrealname = string.join(datasplitted[1:], " ");
+                        }
+                        else if (datasplitted[0] == "pfp") {
+                            authorpfp = string.join(datasplitted[1:], " ");
+                        };
+                    };
+                };
+                if (authorpfp == "") {
+                    authorpfp = "https://ui-avatars.com/api/?name=" + string.replace(authorrealname, " ", "+");
+                };
+                pagelist += [[page, pagename, firstline, author, authorrealname, authorpfp]];
                 datelist += [date];
             };
         };
@@ -325,7 +434,11 @@ else if (splitted[0] == "p") {
             pagelink = string.replace(page[0], ".qm", "");
             pagename = page[1];
             pagedate = date.format(datelist[i], '%Y-%m-%d %H:%M:%S');
-            pagelist += %"<h3><a href=\"/p/$pagelink\">$pagename</a><span style=\"font-size: 10px;\"> $pagedate</span></h3>";
+            pagedesc = page[2];
+            author = page[3];
+            authorrealname = page[4];
+            authorpfp = page[5];
+            pagelist += %"<div class=\"col\"><div class=\"p-4\"><span class=\"badge rounded-pill bg-primary mb-2\">$pagedate</span><h4 class=\"text-break\"><a href=\"/p/$pagelink\">$pagename</a></h4><p class=\"text-break\">$pagedesc</p><div class=\"d-flex\"><img class=\"rounded-circle flex-shrink-0 me-3 fit-cover\" width=\"50\" height=\"50\" src=\"$authorpfp\"><div><p class=\"fw-bold mb-0\">$authorrealname</p><p class=\"mb-0\"><a href=\"/a/$author\" class=\"text-muted\">@$author</a></p></div></div></div></div>";
             i += 1;
         };
         pagef = file.open("views/tag.html", "r");
@@ -416,7 +529,7 @@ else if (splitted[0] == "p") {
                 db.exec(%"INSERT INTO users (nickname, password) VALUES ('$username', '$encryptedpass')");
                 db.exec(%"INSERT INTO sessions (ip, nickname) VALUES ('$ip', '$username')");
                 db.commit();
-                pagef = open(%"./authors/" + username + ".qm", "w");
+                pagef = file.open(%"./authors/" + username + ".qm", "w");
                 file.write(pagef, %"\n-----\nNo description.");
                 file.close(pagef);
                 wutils.redirect("/");
@@ -435,7 +548,7 @@ else if (splitted[0] == "p") {
             wutils.error("401 Unauthorized");
         } else {
             pagef = file.open("authors/" + cs[0] + ".qm", "r");
-            pagecontent = string.format(file.read(pagef));
+            pagecontent = file.read(pagef);
             file.close(pagef);
             if (pagecontent == None) {
                 wutils.error("404 Not Found");
@@ -563,7 +676,9 @@ else if (splitted[0] == "p") {
                     wutils.error("401 Unauthorized");
                 }
                 else if (pass[0] == db.hash(password)) {
-                    writef("authors/" + username + ".qm", %"realname $realname\npfp $pfp\n-----\n$pagecontent");
+                    pagef = file.open("authors/" + username + ".qm", "w");
+                    file.write(pagef, %"realname $realname\npfp $pfp\n-----\n$pagecontent");
+                    file.close(pagef);
                     wutils.redirect("/");
                 }
                 else {
@@ -621,7 +736,7 @@ else if (splitted[0] == "p") {
     } else if (reqtype == "POST") {
         page = splitted[1];
         title = "";
-        tags = [];
+        tags = "";
         pagecontent = "";
         password = "";
 
@@ -631,7 +746,7 @@ else if (splitted[0] == "p") {
                 title = string.join(data[1:], " ");
             }
             else if (data[0] == "tags") {
-                tags += [string.join(data[1:], " ")];
+                tags = string.split(string.join(data[1:], " "), ",");
             }
             else if (data[0] == "pagecontent") {
                 pagecontent = string.join(data[1:], " ");
