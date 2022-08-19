@@ -189,7 +189,7 @@ else if (splitted[0] == "p") {
             if (cs != None) {
                 if (author == cs[0])
                 {
-                    edithtml = %" | <a href=\"/edit/" + pagen + %"\">Edit this page</a>";
+                    edithtml = %" <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/edit/$pagen\">Edit this page</a></li>";
                 };
             };
             pagef = file.open("views/page.html", "r");
