@@ -21,9 +21,6 @@ func error(errorcode)
     include file;
     qcf.new("config.qcf", &config);
     config.author = config.get("author");
-    headerf = file.open("views/header.html");
-    header = string.format(file.read(headerf));
-    file.close(headerf);
     print(%"Content-Type: text/html\nStatus: $errorcode\n\n");
     errf = file.open("views/error.html");
     err = string.format(file.read(errf));

@@ -16,9 +16,17 @@ config.author = config.get("author");
 config.url = config.get("link");
 config.desc = config.get("description");
 config.email = config.get("email");
+config.allowRegister = config.get("allowRegister");
 author = config.author;
 
-route = string.deleteAfter(qo.env("REQUEST_URI"), '?');
+route = qo.env("REQUEST_URI");
+/* The Python None is not equal to the
+QoLang None, so we need to convert it
+to a string to check */
+if (types.toStr(route) == "None") {
+    route = "/";
+};
+route = string.deleteAfter(route, '?');
 reqtype = qo.env("REQUEST_METHOD");
 ip = qo.env("REMOTE_ADDR");
 
@@ -48,7 +56,10 @@ func deleteBlank(list)
 db.exec(%"SELECT nickname FROM sessions WHERE ip = '$ip'");
 cs = db.fetchone();
 if (cs == None) {
-    account = %"<li class=\"nav-item\"><a class=\"nav-link active\" href=\"/login\">Login</a></li> <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/register\">Register</a></li>";
+    account = %"<li class=\"nav-item\"><a class=\"nav-link active\" href=\"/login\">Login</a></li>";
+    if (config.allowRegister) {
+        account += %" <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/register\">Register</a></li>";
+    };
 } else {
     account = %"<li class=\"nav-item\"><a class=\"nav-link active\" href=\"/account\">My Account</a></li> <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/edit\">Create a new page</a></li> <li class=\"nav-item\"><a class=\"nav-link active\" href=\"/logout\">Logout</a></li>";
 };
@@ -495,52 +506,56 @@ else if (splitted[0] == "p") {
             # password = db.hash("password");
     };
 } else if (splitted[0] == "register") {
-    if (reqtype == "GET") {
-        db.exec(%"SELECT nickname FROM sessions WHERE ip = '$ip'");
-        cs = db.fetchone();
-        if (cs == None) {
-            pagef = file.open("views/register.html", "r");
-            content = string.format(file.read(pagef));
-            file.close(pagef);
-            wutils.htmlPage(content);
-        } else {
-            wutils.redirect("/");
-        };
-    } else if (reqtype == "POST") {
-        username = "";
-        password = "";
-        foreach &data in postdata
-        {
-            if (data[0] == "username") {
-                username = data[1];
-            }
-            else if (data[0] == "password") {
-                password = data[1];
-            };
-        };
-        if (username == "" || password == "") {
-            wutils.error("401 Unauthorized");
-        }
-        else {
-            db.exec(%"SELECT password FROM users WHERE nickname = '$username'");
-            pass = db.fetchone();
-            if (pass == None) {
-                encryptedpass = db.hash(password);
-                db.exec(%"INSERT INTO users (nickname, password) VALUES ('$username', '$encryptedpass')");
-                db.exec(%"INSERT INTO sessions (ip, nickname) VALUES ('$ip', '$username')");
-                db.commit();
-                pagef = file.open(%"./authors/" + username + ".qm", "w");
-                file.write(pagef, %"\n-----\nNo description.");
+    if (config.allowRegister) {
+        if (reqtype == "GET") {
+            db.exec(%"SELECT nickname FROM sessions WHERE ip = '$ip'");
+            cs = db.fetchone();
+            if (cs == None) {
+                pagef = file.open("views/register.html", "r");
+                content = string.format(file.read(pagef));
                 file.close(pagef);
+                wutils.htmlPage(content);
+            } else {
                 wutils.redirect("/");
-            }
-            else if (pass[0] == db.hash(password)) {
-                wutils.error("400 Bad Request");
+            };
+        } else if (reqtype == "POST") {
+            username = "";
+            password = "";
+            foreach &data in postdata
+            {
+                if (data[0] == "username") {
+                    username = data[1];
+                }
+                else if (data[0] == "password") {
+                    password = data[1];
+                };
+            };
+            if (username == "" || password == "") {
+                wutils.error("401 Unauthorized");
             }
             else {
-                wutils.error("401 Unauthorized");
+                db.exec(%"SELECT password FROM users WHERE nickname = '$username'");
+                pass = db.fetchone();
+                if (pass == None) {
+                    encryptedpass = db.hash(password);
+                    db.exec(%"INSERT INTO users (nickname, password) VALUES ('$username', '$encryptedpass')");
+                    db.exec(%"INSERT INTO sessions (ip, nickname) VALUES ('$ip', '$username')");
+                    db.commit();
+                    pagef = file.open(%"./authors/" + username + ".qm", "w");
+                    file.write(pagef, %"\n-----\nNo description.");
+                    file.close(pagef);
+                    wutils.redirect("/");
+                }
+                else if (pass[0] == db.hash(password)) {
+                    wutils.error("400 Bad Request");
+                }
+                else {
+                    wutils.error("401 Unauthorized");
+                };
             };
         };
+    } else {
+        wutils.error("403 Forbidden");
     };
 } else if (splitted[0] == "account") {
     if (reqtype == "GET") {
