@@ -104,4 +104,4 @@ Hello! I\'m Arnolxu.
 | `link` | A link (Syntax: `link Text \| Link`) | No |
 
 ## `qomar`
-A markup language, developed for Clog. See [tutorial](src/pages/qomar_tutor.qm).
+A markup language, developed for Camlog. See [tutorial](examples/pages/qomar_tutor.qm).
